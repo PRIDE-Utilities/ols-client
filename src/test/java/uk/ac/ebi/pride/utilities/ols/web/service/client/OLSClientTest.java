@@ -64,6 +64,12 @@ public class OLSClientTest {
     }
 
     @Test
+    public void testSearchById() throws Exception{
+        List<Term> terms = olsClient.searchTermById("ncbitaxon:9606", "ncbitaxon");
+        System.out.println(terms);
+    }
+
+    @Test
     public void testGetTermChildren() throws Exception {
         List<Term> children = olsClient.getTermChildren(new Identifier("MS:1001143", Identifier.IdentifierType.OBO), "ms", 1);
         logger.info(children.toString());
