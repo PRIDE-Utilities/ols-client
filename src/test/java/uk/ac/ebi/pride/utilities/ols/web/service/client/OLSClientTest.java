@@ -5,9 +5,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfigProd;
-import uk.ac.ebi.pride.utilities.ols.web.service.model.Identifier;
-import uk.ac.ebi.pride.utilities.ols.web.service.model.Ontology;
-import uk.ac.ebi.pride.utilities.ols.web.service.model.Term;
+import uk.ac.ebi.pride.utilities.ols.web.service.model.*;
 
 import java.util.Iterator;
 import java.util.List;
@@ -15,6 +13,7 @@ import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Yasset Perez-Riverol (ypriverol@gmail.com)
@@ -135,5 +134,15 @@ public class OLSClientTest {
         Assert.assertTrue(synonyms.contains("2-hybrid"));
         Assert.assertTrue(synonyms.contains("2h"));
         Assert.assertTrue(synonyms.contains("2H"));
+    }
+
+    @Test
+    public void testOboXRefs() throws Exception {
+        Identifier identifier = new Identifier("MI:0018", Identifier.IdentifierType.OBO);
+        Term term = olsClient.getTermById(identifier, "mi");
+        Set<String> oboxRefs = term.getOboXrefs();
+        if(!oboxRefs.contains("PMID:12634794") && !oboxRefs.contains("PMID:10967325") && !oboxRefs.contains("PMID:1946372")){
+            assertTrue(false);
+        }
     }
 }

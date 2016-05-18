@@ -31,6 +31,9 @@ public class SearchResult {
     @JsonProperty("ontology_name")
     String ontology_name;
 
+    @JsonProperty("obo_definition_citation")
+    OBODefinitionCitation[] obo_definition_citation;
+
     public String getId() {
         return id;
     }
@@ -85,5 +88,13 @@ public class SearchResult {
 
     public void setOntology_name(String ontology_name) {
         this.ontology_name = ontology_name;
+    }
+
+    public OBODefinitionCitation[] getObo_definition_citation() {
+        return obo_definition_citation;
+    }
+
+    public void setObo_definition_citation(OBODefinitionCitation[] obo_definition_citation) {
+        this.obo_definition_citation = obo_definition_citation;
     }
 }
