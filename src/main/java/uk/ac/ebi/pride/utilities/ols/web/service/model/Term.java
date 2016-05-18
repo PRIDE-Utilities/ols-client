@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Yasset Perez-Riverol (ypriverol@gmail.com)
@@ -64,17 +66,21 @@ public class Term implements Comparable{
     @JsonProperty("obo_synonym")
     OBOSynonym[] oboSynonyms;
 
+    @JsonProperty("obo_definition_citation")
+    OBODefinitionCitation[] oboDefinitionCitation;
+
     public Term() {
     }
 
     public Term(Identifier iri, String label, String[] description,
-                Identifier shortForm, Identifier oboId, String ontologyName) {
+                Identifier shortForm, Identifier oboId, String ontologyName, OBODefinitionCitation[] oboDefinitionCitation) {
         this.iri = iri;
         this.label = label;
         this.description = description;
         this.shortForm = shortForm;
         this.oboId = oboId;
         this.ontologyName = ontologyName;
+        this.oboDefinitionCitation = oboDefinitionCitation;
     }
 
     public Identifier getIri() {
@@ -209,6 +215,14 @@ public class Term implements Comparable{
         this.oboXRefs = oboXRefs;
     }
 
+    public OBODefinitionCitation[] getOboDefinitionCitation() {
+        return oboDefinitionCitation;
+    }
+
+    public void setOboDefinitionCitation(OBODefinitionCitation[] oboDefinitionCitation) {
+        this.oboDefinitionCitation = oboDefinitionCitation;
+    }
+
     public boolean containsXref(String annotationType) {
         if(oboXRefs != null && oboXRefs.length > 0){
             for(OBOXRef oboRef: oboXRefs)
@@ -237,6 +251,16 @@ public class Term implements Comparable{
                     synonyms.put(synonym.getName(), synonym.getType());
         }
         return synonyms;
+    }
+
+    public Set<String> getOboXrefs(){
+       Set<String> result = new HashSet<>();
+        for (OBODefinitionCitation anOboDefinitionCitation : oboDefinitionCitation) {
+            for (OBOXRefs oboxRefs : anOboDefinitionCitation.getOboXrefs()) {
+                result.add(oboxRefs.getId());
+            }
+        }
+        return result;
     }
 
     @Override

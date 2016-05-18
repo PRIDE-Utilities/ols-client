@@ -10,7 +10,6 @@ import uk.ac.ebi.pride.utilities.ols.web.service.utils.Constants;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.*;
 
 
@@ -272,7 +271,7 @@ public class OLSClient implements Client {
         for (int i = 0; i < terms.size(); i++)
             if (terms.get(i).getObo_id() != null && terms.get(i).getName() != null) {
                 SearchResult termResult = terms.get(i);
-                termResults.add(new Term(termResult.getIri(), termResult.getName(), termResult.getDescription(), termResult.getShort_name(), termResult.getObo_id(), termResult.getOntology_name()));
+                termResults.add(new Term(termResult.getIri(), termResult.getName(), termResult.getDescription(), termResult.getShort_name(), termResult.getObo_id(), termResult.getOntology_name(), termResult.getObo_definition_citation()));
             }
 
         return termResults;
@@ -490,7 +489,7 @@ public class OLSClient implements Client {
         for (int i = 0; i < terms.size(); i++)
             if (terms.get(i).getObo_id() != null && terms.get(i).getName() != null) {
                 SearchResult termResult = terms.get(i);
-                termResults.add(new Term(termResult.getIri(), termResult.getName(), termResult.getDescription(), termResult.getShort_name(), termResult.getObo_id(), termResult.getOntology_name()));
+                termResults.add(new Term(termResult.getIri(), termResult.getName(), termResult.getDescription(), termResult.getShort_name(), termResult.getObo_id(), termResult.getOntology_name(), termResult.getObo_definition_citation()));
             }
 
         return termResults;
@@ -501,7 +500,7 @@ public class OLSClient implements Client {
         if (currentTermQuery.getResponse().getNumFound() != 0) {
             SearchResult termResult = Arrays.asList(currentTermQuery.getResponse().getSearchResults()).get(0);
             return new Term(termResult.getIri(), termResult.getName(), termResult.getDescription(), termResult.getShort_name(),
-                    termResult.getObo_id(), termResult.getOntology_name());
+                    termResult.getObo_id(), termResult.getOntology_name(), termResult.getObo_definition_citation());
         }
         return null;
     }
