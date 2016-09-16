@@ -3,6 +3,7 @@ package uk.ac.ebi.pride.utilities.ols.web.service.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -255,5 +256,14 @@ public class Term implements Comparable{
 
     }
 
-
+    @Override
+    public String toString() {
+        return "Term{" +
+                "iri=" + iri +
+                ", label='" + label + '\'' +
+                ", oboId=" + oboId +
+                ", shortForm=" + shortForm +
+                ", description=" + Arrays.toString(description) +
+                '}';
+    }
 }
