@@ -56,6 +56,9 @@ public class Term implements Comparable{
     @JsonProperty("obo_id")
     Identifier oboId;
 
+    @JsonProperty("obo_definition_citation")
+    OboDefinitionCitation[] oboDefinitionCitation;
+
     @JsonProperty("_links")
     Link link;
 
@@ -69,13 +72,14 @@ public class Term implements Comparable{
     }
 
     public Term(Identifier iri, String label, String[] description,
-                Identifier shortForm, Identifier oboId, String ontologyName) {
+                Identifier shortForm, Identifier oboId, String ontologyName, OboDefinitionCitation[] oboDefinitionCitation) {
         this.iri = iri;
         this.label = label;
         this.description = description;
         this.shortForm = shortForm;
         this.oboId = oboId;
         this.ontologyName = ontologyName;
+        this.oboDefinitionCitation = oboDefinitionCitation;
     }
 
     public Identifier getIri() {
@@ -210,11 +214,19 @@ public class Term implements Comparable{
         this.oboXRefs = oboXRefs;
     }
 
+    public OboDefinitionCitation[] getOboDefinitionCitation() {
+        return oboDefinitionCitation;
+    }
+
+    public void setOboDefinitionCitation(OboDefinitionCitation[] oboDefinitionCitation) {
+        this.oboDefinitionCitation = oboDefinitionCitation;
+    }
+
     public boolean containsXref(String annotationType) {
         if(oboXRefs != null && oboXRefs.length > 0){
             for(OBOXRef oboRef: oboXRefs)
                 if(oboRef != null && oboRef.getId() != null)
-                    if(oboRef.getId().toUpperCase().contains(annotationType.toUpperCase()))
+                    if(oboRef.getDatabase().toUpperCase().contains(annotationType.toUpperCase()))
                         return true;
         }
         return false;
@@ -223,9 +235,9 @@ public class Term implements Comparable{
     public String getXRefValue(String annotationType) {
         if(oboXRefs != null && oboXRefs.length > 0){
             for(OBOXRef oboRef: oboXRefs)
-                if(oboRef != null && oboRef.getId() != null)
-                    if(oboRef.getId().toUpperCase().contains(annotationType.toUpperCase()))
-                        return oboRef.getDatabase();
+                if(oboRef != null && oboRef.getDatabase() != null)
+                    if(oboRef.getDatabase().toUpperCase().contains(annotationType.toUpperCase()))
+                        return oboRef.getDescription();
         }
         return null;
     }
