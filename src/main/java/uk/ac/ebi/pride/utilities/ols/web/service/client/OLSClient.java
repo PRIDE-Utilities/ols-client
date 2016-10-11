@@ -327,7 +327,7 @@ public class OLSClient implements Client {
         for (int i = 0; i < terms.size(); i++)
             if (terms.get(i).getName() != null) {
                 SearchResult termResult = terms.get(i);
-                termResults.add(new Term(termResult.getIri(), termResult.getName(), termResult.getDescription(), termResult.getShort_name(), termResult.getObo_id(), termResult.getOntology_name(), termResult.getScore(), termResult.getOntology_iri(), termResult.getIs_defining_ontology(), termResult.getOboDefinitionCitation()));
+                termResults.add(new Term(termResult.getIri(), termResult.getName(), termResult.getDescription(), termResult.getShortName(), termResult.getOboId(), termResult.getOntologyName(), termResult.getScore(), termResult.getOntologyIri(), termResult.getIsDefiningOntology(), termResult.getOboDefinitionCitation()));
             }
 
         return termResults;
@@ -606,7 +606,7 @@ public class OLSClient implements Client {
         for (int i = 0; i < terms.size(); i++)
             if (terms.get(i).getName() != null) {
                 SearchResult termResult = terms.get(i);
-                termResults.add(new Term(termResult.getIri(), termResult.getName(), termResult.getDescription(), termResult.getShort_name(), termResult.getObo_id(), termResult.getOntology_name(), termResult.getScore(), termResult.getOntology_iri(), termResult.getIs_defining_ontology(), termResult.getOboDefinitionCitation()));
+                termResults.add(new Term(termResult.getIri(), termResult.getName(), termResult.getDescription(), termResult.getShortName(), termResult.getOboId(), termResult.getOntologyName(), termResult.getScore(), termResult.getOntologyIri(), termResult.getIsDefiningOntology(), termResult.getOboDefinitionCitation()));
             }
 
         return termResults;
@@ -616,7 +616,7 @@ public class OLSClient implements Client {
         SearchQuery currentTermQuery = getSearchQuery(0, exactName, ontologyId, true, null);
         if (currentTermQuery.getResponse().getNumFound() != 0) {
             SearchResult termResult = Arrays.asList(currentTermQuery.getResponse().getSearchResults()).get(0);
-            return new Term(termResult.getIri(), termResult.getName(), termResult.getDescription(), termResult.getShort_name(), termResult.getObo_id(), termResult.getOntology_name(), termResult.getScore(), termResult.getOntology_iri(), termResult.getIs_defining_ontology(), termResult.getOboDefinitionCitation());
+            return new Term(termResult.getIri(), termResult.getName(), termResult.getDescription(), termResult.getShortName(), termResult.getOboId(), termResult.getOntologyName(), termResult.getScore(), termResult.getOntologyIri(), termResult.getIsDefiningOntology(), termResult.getOboDefinitionCitation());
         }
         return null;
     }
