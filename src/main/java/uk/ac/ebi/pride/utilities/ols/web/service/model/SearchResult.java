@@ -17,10 +17,10 @@ public class SearchResult {
     Identifier iri;
 
     @JsonProperty("short_form")
-    Identifier short_name;
+    Identifier shortName;
 
     @JsonProperty("obo_id")
-    Identifier obo_id;
+    Identifier oboId;
 
     @JsonProperty("label")
     String name;
@@ -29,7 +29,16 @@ public class SearchResult {
     String[] description;
 
     @JsonProperty("ontology_name")
-    String ontology_name;
+    String ontologyName;
+
+    @JsonProperty("score")
+    String score;
+
+    @JsonProperty("ontology_iri")
+    String ontologyIri;
+
+    @JsonProperty("is_defining_ontology")
+    boolean definedOntology;
 
     @JsonProperty("obo_definition_citation")
     OboDefinitionCitation[] oboDefinitionCitation;
@@ -50,20 +59,20 @@ public class SearchResult {
         this.iri = new Identifier(iri, Identifier.IdentifierType.IRI);
     }
 
-    public Identifier getShort_name() {
-        return short_name;
+    public Identifier getShortName() {
+        return shortName;
     }
 
-    public void setShort_name(String short_name) {
-        this.short_name = new Identifier(short_name, Identifier.IdentifierType.OWL);
+    public void setShortName(String shortName) {
+        this.shortName = new Identifier(shortName, Identifier.IdentifierType.OWL);
     }
 
-    public Identifier getObo_id() {
-        return obo_id;
+    public Identifier getOboId() {
+        return oboId;
     }
 
-    public void setObo_id(String obo_id) {
-        this.obo_id = new Identifier(obo_id, Identifier.IdentifierType.OBO);
+    public void setOboId(String oboId) {
+        this.oboId = new Identifier(oboId, Identifier.IdentifierType.OBO);
     }
 
     public String getName() {
@@ -82,12 +91,36 @@ public class SearchResult {
         this.description = description;
     }
 
-    public String getOntology_name() {
-        return ontology_name;
+    public String getOntologyName() {
+        return ontologyName;
     }
 
-    public void setOntology_name(String ontology_name) {
-        this.ontology_name = ontology_name;
+    public void setOntologyName(String ontologyName) {
+        this.ontologyName = ontologyName;
+    }
+
+    public String getScore() {
+        return score;
+    }
+
+    public void setScore(String score) {
+        this.score = score;
+    }
+
+    public String getOntologyIri() {
+        return ontologyIri;
+    }
+
+    public void setOntologyIri(String ontologyIri) {
+        this.ontologyIri = ontologyIri;
+    }
+
+    public boolean getIsDefiningOntology() {
+        return definedOntology;
+    }
+
+    public void setIsDefiningOntology(boolean definedOntology) {
+        this.definedOntology = definedOntology;
     }
 
     public OboDefinitionCitation[] getOboDefinitionCitation() {

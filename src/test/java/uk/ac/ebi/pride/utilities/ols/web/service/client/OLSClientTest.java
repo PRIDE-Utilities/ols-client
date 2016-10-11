@@ -5,10 +5,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfigProd;
-import uk.ac.ebi.pride.utilities.ols.web.service.model.Identifier;
-import uk.ac.ebi.pride.utilities.ols.web.service.model.Ontology;
-import uk.ac.ebi.pride.utilities.ols.web.service.model.Term;
+import uk.ac.ebi.pride.utilities.ols.web.service.model.*;
 
+import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +15,7 @@ import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Yasset Perez-Riverol (ypriverol@gmail.com)
@@ -62,6 +62,7 @@ public class OLSClientTest {
         terms = olsClient.getTermsByName("modification", "ms", true);
         Iterator iterator = terms.iterator();
         Assert.assertTrue(((Term) iterator.next()).getTermOBOId().getIdentifier().equalsIgnoreCase("MS:1002672"));
+        Assert.assertTrue(((Term) iterator.next()).getLabel().toLowerCase().contains("modification"));
     }
 
     @Test
@@ -139,6 +140,74 @@ public class OLSClientTest {
     }
 
     @Test
+    public void testGetExactTermsByName(){
+        String termName = "liver";
+        String ontologyName = "efo";
+        List <Term > terms = olsClient.getExactTermsByName(termName, null);
+
+        Assert.assertNotNull(terms);
+        Assert.assertTrue(!terms.isEmpty());
+
+        for (Term term : terms){
+            Assert.assertTrue(term.getLabel().toLowerCase().contains(termName));
+        }
+
+        terms = olsClient.getExactTermsByName(termName, ontologyName);
+
+        Assert.assertNotNull(terms);
+        Assert.assertTrue(!terms.isEmpty());
+        Assert.assertTrue(terms.size() == 1);
+        Assert.assertEquals(terms.get(0).getIri().getIdentifier(),"http://purl.obolibrary.org/obo/UBERON_0002107");
+
+    }
+
+    @Test
+    public void testGetExactTermsByNameFromParent(){
+        String termName = "liver";
+        String ontologyName = "efo";
+        String parentTerm = "http://www.ebi.ac.uk/efo/EFO_0000635"; //organism part
+        List <Term > termsFromParent = olsClient.getExactTermsByNameFromParent(termName, null, parentTerm);
+        List <Term > terms = olsClient.getExactTermsByName(termName, null);
+
+        Assert.assertNotNull(termsFromParent);
+        Assert.assertNotEquals(termsFromParent.size(), terms.size());
+
+
+        terms = olsClient.getExactTermsByNameFromParent(termName, ontologyName, parentTerm);
+
+        Assert.assertNotNull(terms);
+        Assert.assertTrue(!terms.isEmpty());
+        Assert.assertEquals(terms.get(0).getIri().getIdentifier(),"http://purl.obolibrary.org/obo/UBERON_0002107");
+        Assert.assertEquals(terms.get(0).getOntologyName().toLowerCase(),"efo");
+
+    }
+
+    @Test
+    public void testGetOntologyFromId(){
+
+        Ontology ontology = olsClient.getOntologyFromId(URI.create("http://www.ebi.ac.uk/efo"));
+        assertEquals(ontology.getNamespace(),"efo");
+
+        ontology = olsClient.getOntologyFromId(URI.create("http://purl.obolibrary.org/obo/pride_cv.obo"));
+        assertEquals(ontology.getNamespace(),"pride");
+
+        ontology = olsClient.getOntologyFromId(URI.create("http://purl.enanomapper.org/onto/enanomapper.owl"));
+        assertEquals(ontology.getNamespace(),"enm");
+
+        ontology = olsClient.getOntologyFromId(URI.create("file:/C:/Lea/ontologies/environnement/leo.obo"));
+        assertEquals(ontology.getNamespace(),"eol");
+
+        ontology = olsClient.getOntologyFromId(URI.create("http://www.bio.ntnu.no/ontology/GeXO/gexo.owl"));
+        assertEquals(ontology.getNamespace(),"gexo");
+
+        ontology = olsClient.getOntologyFromId(URI.create("http://purl.obolibrary.org/obo/go"));
+        assertEquals(ontology.getNamespace(),"go");
+
+    }
+
+
+
+    @Test
     public void testGetMetaData() throws Exception {
         Identifier identifier1 = new Identifier("MI:0446", Identifier.IdentifierType.OBO);
         Map metadata1 = olsClient.getMetaData(identifier1, "mi");
@@ -167,5 +236,39 @@ public class OLSClientTest {
         Assert.assertEquals("[0-9]+", xrefs.get("id-validation-regexp"));
         Assert.assertEquals("http://europepmc.org/abstract/MED/${ac}", xrefs.get("search-url"));
         Assert.assertEquals("PMID:14755292", xrefs.get("xref_definition_14755292"));
+    }
+
+    @Test
+    public void testGetLabelByIri(){
+
+        String customQueryField = new QueryFields.QueryFieldBuilder()
+                .setIri()
+                .build()
+                .toString();
+        olsClient.setQueryField(customQueryField);
+
+        String fieldList = new FieldList.FieldListBuilder()
+                .setLabel()
+                .setIri()
+                .setIsDefiningOntology()
+                .build()
+                .toString();
+        olsClient.setFieldList(fieldList);
+
+        String iri = "http://www.orpha.net/ORDO/Orphanet_101150";
+        String foundLabel = "";
+        List<Term> terms = olsClient.getExactTermsByName(iri, null);
+        for (Term term : terms){
+            if (term.isDefinedOntology()){
+                foundLabel = term.getLabel();
+            }
+        }
+
+        assertTrue(foundLabel.equals("Autosomal recessive dopa-responsive dystonia"));
+
+        //restore olsClient search to it's default query field and field list
+        olsClient.setQueryField(olsClient.DEFAULT_QUERY_FIELD);
+        olsClient.setFieldList(olsClient.DEFAULT_FIELD_LIST);
+
     }
 }
