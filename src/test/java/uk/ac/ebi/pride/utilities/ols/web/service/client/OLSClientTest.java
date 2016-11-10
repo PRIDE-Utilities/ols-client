@@ -29,7 +29,7 @@ public class OLSClientTest {
     @Test
     public void testGetTermById() throws Exception {
         Term term = olsClient.getTermById(new Identifier("MS:1001767", Identifier.IdentifierType.OBO), "MS");
-        Assert.assertTrue(term.getLabel().equalsIgnoreCase("nanoACQUITY UPLC System with Technology"));
+        Assert.assertTrue(term.getLabel().equalsIgnoreCase("nanoACQUITY UPLC System with 1D Technology"));
     }
 
 
@@ -239,25 +239,11 @@ public class OLSClientTest {
     }
 
     @Test
-    public void testGetLabelByIri(){
-
-        String customQueryField = new QueryFields.QueryFieldBuilder()
-                .setIri()
-                .build()
-                .toString();
-        olsClient.setQueryField(customQueryField);
-
-        String fieldList = new FieldList.FieldListBuilder()
-                .setLabel()
-                .setIri()
-                .setIsDefiningOntology()
-                .build()
-                .toString();
-        olsClient.setFieldList(fieldList);
+    public void testGetLabelByIriString(){
 
         String iri = "http://www.orpha.net/ORDO/Orphanet_101150";
         String foundLabel = "";
-        List<Term> terms = olsClient.getExactTermsByName(iri, null);
+        List<Term> terms = olsClient.getExactTermsByIriString(iri);
         for (Term term : terms){
             if (term.isDefinedOntology()){
                 foundLabel = term.getLabel();
@@ -266,9 +252,28 @@ public class OLSClientTest {
 
         assertTrue(foundLabel.equals("Autosomal recessive dopa-responsive dystonia"));
 
-        //restore olsClient search to it's default query field and field list
-        olsClient.setQueryField(olsClient.DEFAULT_QUERY_FIELD);
-        olsClient.setFieldList(olsClient.DEFAULT_FIELD_LIST);
+    }
 
+    @Test
+    public void testObsolete(){
+        String iri = "http://edamontology.org/data_0007";
+        List<Term> terms = olsClient.getExactTermsByIriStringWithObsolete(iri);
+        Term obsoleteTerm = null;
+
+        if (terms != null && !terms.isEmpty()) {
+            for (Term term : terms) {
+                if (term.isDefinedOntology()) {
+                    obsoleteTerm = term;
+                }
+            }
+            if (obsoleteTerm == null){
+                obsoleteTerm = terms.get(0);
+            }
+        }
+
+        String ontology = obsoleteTerm.getOntologyName();
+        obsoleteTerm = olsClient.retrieveTerm(iri, ontology);
+
+        assertTrue(olsClient.isObsolete(obsoleteTerm));
     }
 }
