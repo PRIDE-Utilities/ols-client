@@ -40,9 +40,6 @@ public class Term implements Comparable{
     @JsonProperty("ontology_iri")
     String ontologyIri;
 
-    @JsonProperty("is_obsolete")
-    boolean obsolete;
-
     @JsonProperty("is_defining_ontology")
     boolean definedOntology;
 
@@ -81,10 +78,28 @@ public class Term implements Comparable{
         this.shortForm = shortForm;
         this.oboId = oboId;
         this.ontologyName = ontologyName;
-        this.oboDefinitionCitation = oboDefinitionCitation;
         this.score = score;
         this.ontologyIri = ontologyIri;
         this.definedOntology = definedOntology;
+        this.oboDefinitionCitation = oboDefinitionCitation;
+    }
+
+    public Term(Identifier iri, String label, String[] description,
+                Identifier shortForm, Identifier oboId, String ontologyName, String score, String ontologyIri,
+                boolean definedOntology,
+                OboDefinitionCitation[] oboDefinitionCitation,
+                Annotation annotation) {
+        this.iri = iri;
+        this.label = label;
+        this.description = description;
+        this.shortForm = shortForm;
+        this.oboId = oboId;
+        this.ontologyName = ontologyName;
+        this.score = score;
+        this.ontologyIri = ontologyIri;
+        this.definedOntology = definedOntology;
+        this.oboDefinitionCitation = oboDefinitionCitation;
+        this.annotation = annotation;
     }
 
     public Identifier getIri() {
@@ -145,14 +160,6 @@ public class Term implements Comparable{
 
     public void setOntologyIri(String ontologyIri) {
         this.ontologyIri = ontologyIri;
-    }
-
-    public boolean isObsolete() {
-        return obsolete;
-    }
-
-    public void setObsolete(boolean obsolete) {
-        this.obsolete = obsolete;
     }
 
     public boolean isDefinedOntology() {

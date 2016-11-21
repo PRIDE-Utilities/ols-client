@@ -40,6 +40,13 @@ public class SearchResult {
     @JsonProperty("is_defining_ontology")
     boolean definedOntology;
 
+    @JsonProperty("is_obsolete")
+    boolean obsolete;
+
+    @JsonProperty("annotation")
+    Annotation annotation;
+
+
     @JsonProperty("obo_definition_citation")
     OboDefinitionCitation[] oboDefinitionCitation;
 
@@ -117,6 +124,22 @@ public class SearchResult {
 
     public boolean getIsDefiningOntology() {
         return definedOntology;
+    }
+
+    public boolean isObsolete() {
+        return obsolete;
+    }
+
+    public void setObsolete(boolean obsolete) {
+        this.obsolete = obsolete;
+    }
+
+    public Annotation getAnnotation() {
+        return annotation;
+    }
+
+    public void setAnnotation(Annotation annotation) {
+        this.annotation = annotation;
     }
 
     public void setIsDefiningOntology(boolean definedOntology) {
