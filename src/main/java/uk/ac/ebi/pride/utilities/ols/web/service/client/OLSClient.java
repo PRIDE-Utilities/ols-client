@@ -771,6 +771,11 @@ public class OLSClient implements Client {
     }
 
     private RetrieveTermQuery getRetrieveQuery(String iri, String ontology) throws RestClientException {
+
+        if(ontology == null || ontology.isEmpty()){
+            throw new IllegalArgumentException("The term's ontology must not be null or empty!");
+        }
+
         String query;
 
         query = String.format("%s://%s/api/ontologies/%s/terms?iri=%s",
