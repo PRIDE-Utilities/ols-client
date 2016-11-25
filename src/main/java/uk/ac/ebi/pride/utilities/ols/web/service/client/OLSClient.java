@@ -4,9 +4,10 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import uk.ac.ebi.pride.utilities.ols.web.service.config.AbstractOLSWsConfig;
+import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfig;
 import uk.ac.ebi.pride.utilities.ols.web.service.model.*;
 import uk.ac.ebi.pride.utilities.ols.web.service.utils.Constants;
+import uk.ac.ebi.pride.utilities.ols.web.service.utils.PropertiesManager;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -20,7 +21,12 @@ import java.util.*;
 public class OLSClient implements Client {
 
     protected RestTemplate restTemplate;
-    protected AbstractOLSWsConfig config;
+    protected OLSWsConfig config;
+
+    private int ONTOLOGY_PAGE_SIZE;
+    private int SEARCH_PAGE_SIZE;
+    private int TERM_PAGE_SIZE;
+    private String REFERENCE_SEPARATOR;
 
     private String queryField;
     private String fieldList;
@@ -75,9 +81,31 @@ public class OLSClient implements Client {
      *
      * @param config configuration to use.
      */
-    public OLSClient(AbstractOLSWsConfig config) {
+    public OLSClient(OLSWsConfig config) {
         this.config = config;
+
         this.restTemplate = new RestTemplate();
+
+        if (PropertiesManager.getPropertyValue("ontology.page.size") != null) {
+            this.ONTOLOGY_PAGE_SIZE = Integer.valueOf(PropertiesManager.getPropertyValue("ontology.page.size"));
+        } else {
+            this.ONTOLOGY_PAGE_SIZE = Constants.ONTOLOGY_PAGE_SIZE;
+        }
+        if (PropertiesManager.getPropertyValue("search.page.size") != null){
+            this.SEARCH_PAGE_SIZE = Integer.valueOf(PropertiesManager.getPropertyValue("search.page.size"));
+        } else {
+            this.SEARCH_PAGE_SIZE = Constants.SEARCH_PAGE_SIZE;
+        }
+        if (PropertiesManager.getPropertyValue("term.page.size") != null){
+            this.TERM_PAGE_SIZE = Integer.valueOf(PropertiesManager.getPropertyValue("term.page.size"));
+        } else {
+            this.TERM_PAGE_SIZE = Constants.TERM_PAGE_SIZE;
+        }
+        if (PropertiesManager.getPropertyValue("reference.separator") != null){
+            this.REFERENCE_SEPARATOR = PropertiesManager.getPropertyValue("reference.separator");
+        } else {
+            this.REFERENCE_SEPARATOR = Constants.REFERENCE_SEPARATOR;
+        }
     }
 
 
@@ -89,11 +117,11 @@ public class OLSClient implements Client {
         this.restTemplate = restTemplate;
     }
 
-    public AbstractOLSWsConfig getConfig() {
+    public OLSWsConfig getConfig() {
         return config;
     }
 
-    public void setConfig(AbstractOLSWsConfig config) {
+    public void setConfig(OLSWsConfig config) {
         this.config = config;
     }
 
@@ -336,14 +364,14 @@ public class OLSClient implements Client {
 
         String query = String.format("%s://%s/api/search?q=*%s*&" + getFieldList()
                 + "&rows=%s&start=%s",
-                config.getProtocol(), config.getHostName(), identifier, Constants.SEARCH_PAGE_SIZE, page);
+                config.getProtocol(), config.getHostName(), identifier, SEARCH_PAGE_SIZE, page);
 
 
 
         if (ontologyID != null && !ontologyID.isEmpty())
             query = String.format("%s://%s/api/search?q=%s&exact=on&" + getFieldList()
                 + "&rows=%s&start=%s&ontology=%s",
-                config.getProtocol(), config.getHostName(), identifier, Constants.SEARCH_PAGE_SIZE, page, ontologyID);
+                config.getProtocol(), config.getHostName(), identifier, SEARCH_PAGE_SIZE, page, ontologyID);
 
         logger.debug(query);
         return this.restTemplate.getForObject(query, SearchQuery.class);
@@ -404,7 +432,7 @@ public class OLSClient implements Client {
 
     private OntologyQuery getOntologyQuery(int page) throws RestClientException {
         String query = String.format("%s://%s/api/ontologies?page=%s&size=%s",
-                config.getProtocol(), config.getHostName(), page, Constants.ONTOLOGY_PAGE_SIZE);
+                config.getProtocol(), config.getHostName(), page, ONTOLOGY_PAGE_SIZE);
         logger.debug(query);
 
         return this.restTemplate.getForObject(query, OntologyQuery.class);
@@ -442,7 +470,7 @@ public class OLSClient implements Client {
     private TermQuery getRootQuery(int page, String ontologyID) {
 
         String query = String.format("%s://%s/api/ontologies/%s/terms/roots/?page=%s&size=%s",
-                config.getProtocol(), config.getHostName(), ontologyID, page, Constants.TERM_PAGE_SIZE);
+                config.getProtocol(), config.getHostName(), ontologyID, page, TERM_PAGE_SIZE);
 
         logger.debug(query);
 
@@ -452,7 +480,7 @@ public class OLSClient implements Client {
     private TermQuery getTermQuery(int page, String ontologyID) {
 
         String query = String.format("%s://%s/api/ontologies/%s/terms/?page=%s&size=%s",
-                config.getProtocol(), config.getHostName(), ontologyID, page, Constants.TERM_PAGE_SIZE);
+                config.getProtocol(), config.getHostName(), ontologyID, page, TERM_PAGE_SIZE);
 
         logger.debug(query);
 
@@ -751,7 +779,7 @@ public class OLSClient implements Client {
                 this.getQueryField()
                 + "&rows=%s&start=%s&"
                 + this.getFieldList() ,
-                config.getProtocol(), config.getHostName(), name, Constants.SEARCH_PAGE_SIZE, page);
+                config.getProtocol(), config.getHostName(), name, SEARCH_PAGE_SIZE, page);
 
         if (ontology != null && !ontology.isEmpty())
             query += "&ontology=" + ontology;
@@ -792,7 +820,7 @@ public class OLSClient implements Client {
                         queryField
                         + "&rows=%s&start=%s&"
                         + fieldList ,
-                config.getProtocol(), config.getHostName(), name, Constants.SEARCH_PAGE_SIZE, page);
+                config.getProtocol(), config.getHostName(), name, SEARCH_PAGE_SIZE, page);
 
         if (ontology != null && !ontology.isEmpty())
             query += "&ontology=" + ontology;

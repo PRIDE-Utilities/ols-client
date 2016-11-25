@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfigProd;
+import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfig;
 import uk.ac.ebi.pride.utilities.ols.web.service.model.*;
 
 import java.net.URI;
@@ -23,7 +23,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class OLSClientTest {
 
-    private static OLSClient olsClient = new OLSClient(new OLSWsConfigProd());
+    private static OLSClient olsClient = new OLSClient(new OLSWsConfig());
     private static final Logger logger = LoggerFactory.getLogger(OLSClientTest.class);
 
     @Test
