@@ -1,7 +1,6 @@
 package uk.ac.ebi.pride.utilities.ols.web.service.config;
 
 import uk.ac.ebi.pride.utilities.ols.web.service.utils.Constants;
-import uk.ac.ebi.pride.utilities.ols.web.service.utils.PropertiesManager;
 
 /**
  * @author ypriverol
@@ -17,7 +16,8 @@ public abstract class AbstractOLSWsConfig {
     }
 
     public AbstractOLSWsConfig(String hostName){
-
+        this.hostName = hostName;
+        this.protocol = Constants.OLS_PROTOCOL;
     }
 
     public AbstractOLSWsConfig(String protocol, String hostName){
