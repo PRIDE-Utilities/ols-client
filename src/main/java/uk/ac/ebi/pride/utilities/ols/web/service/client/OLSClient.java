@@ -4,6 +4,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import uk.ac.ebi.pride.utilities.ols.web.service.config.AbstractOLSWsConfig;
 import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfig;
 import uk.ac.ebi.pride.utilities.ols.web.service.model.*;
 import uk.ac.ebi.pride.utilities.ols.web.service.utils.Constants;
@@ -21,7 +22,7 @@ import java.util.*;
 public class OLSClient implements Client {
 
     protected RestTemplate restTemplate;
-    protected OLSWsConfig config;
+    protected AbstractOLSWsConfig config;
 
     private int ONTOLOGY_PAGE_SIZE;
     private int SEARCH_PAGE_SIZE;
@@ -81,7 +82,7 @@ public class OLSClient implements Client {
      *
      * @param config configuration to use.
      */
-    public OLSClient(OLSWsConfig config) {
+    public OLSClient(AbstractOLSWsConfig config) {
         this.config = config;
 
         this.restTemplate = new RestTemplate();
@@ -117,11 +118,11 @@ public class OLSClient implements Client {
         this.restTemplate = restTemplate;
     }
 
-    public OLSWsConfig getConfig() {
+    public AbstractOLSWsConfig getConfig() {
         return config;
     }
 
-    public void setConfig(OLSWsConfig config) {
+    public void setConfig(AbstractOLSWsConfig config) {
         this.config = config;
     }
 

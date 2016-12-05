@@ -7,7 +7,7 @@ import uk.ac.ebi.pride.utilities.ols.web.service.utils.PropertiesManager;
  * @author ypriverol
  *
  */
-public class OLSWsConfig {
+public class OLSWsConfig extends AbstractOLSWsConfig{
     private String hostName;
     private String protocol;
 
