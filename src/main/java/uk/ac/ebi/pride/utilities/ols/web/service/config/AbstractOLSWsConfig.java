@@ -1,5 +1,6 @@
 package uk.ac.ebi.pride.utilities.ols.web.service.config;
 
+
 /**
  * @author ypriverol
  *
@@ -9,7 +10,11 @@ public abstract class AbstractOLSWsConfig {
     private String hostName;
     private String protocol;
 
-    protected AbstractOLSWsConfig(String protocol, String hostName) {
+    public AbstractOLSWsConfig(String hostName) {
+        this.hostName = hostName;
+    }
+
+    public AbstractOLSWsConfig(String protocol, String hostName) {
         this.hostName = hostName;
         this.protocol = protocol;
     }
