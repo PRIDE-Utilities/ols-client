@@ -10,10 +10,6 @@ public abstract class AbstractOLSWsConfig {
     private String hostName;
     private String protocol;
 
-    public AbstractOLSWsConfig(String hostName) {
-        this.hostName = hostName;
-    }
-
     public AbstractOLSWsConfig(String protocol, String hostName) {
         this.hostName = hostName;
         this.protocol = protocol;
