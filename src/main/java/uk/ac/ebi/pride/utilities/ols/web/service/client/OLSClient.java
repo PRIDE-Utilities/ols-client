@@ -10,6 +10,7 @@ import uk.ac.ebi.pride.utilities.ols.web.service.utils.Constants;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.*;
 
@@ -127,7 +128,7 @@ public class OLSClient implements Client {
      */
     public Term getTermByOBOId(String termOBOId, String ontologyId) throws RestClientException {
 
-        String url = String.format("%s://%s/api/ontologies/%s/terms?obo_id=%s",
+        String url = String.format("%s://%s/ols/api/ontologies/%s/terms?obo_id=%s",
                 config.getProtocol(), config.getHostName(), ontologyId, termOBOId);
 
         logger.debug(url);
@@ -151,7 +152,7 @@ public class OLSClient implements Client {
      */
     public Term getTermByShortName(String shortTerm, String ontologyId) throws RestClientException {
 
-        String url = String.format("%s://%s/api/ontologies/%s/terms?short_term=%s",
+        String url = String.format("%s://%s/ols/api/ontologies/%s/terms?short_term=%s",
                 config.getProtocol(), config.getHostName(), ontologyId, shortTerm);
 
         logger.debug(url);
@@ -175,7 +176,7 @@ public class OLSClient implements Client {
      */
     public Term getTermByIRIId(String iriId, String ontologyId) throws RestClientException {
 
-        String url = String.format("%s://%s/api/ontologies/%s/terms/%s",
+        String url = String.format("%s://%s/ols/api/ontologies/%s/terms/%s",
                 config.getProtocol(), config.getHostName(), ontologyId, iriId);
 
         logger.debug(url);
@@ -257,7 +258,7 @@ public class OLSClient implements Client {
      */
     public List<Term> getTermChildren(Identifier termOBOId, String ontologyId, int distance) throws RestClientException {
         List<Term> terms = new ArrayList<Term>();
-        String query = String.format("%s://%s/api/ontologies/%s/terms?obo_id=%s",
+        String query = String.format("%s://%s/ols/api/ontologies/%s/terms?obo_id=%s",
                 config.getProtocol(), config.getHostName(), ontologyId, termOBOId.getIdentifier());
 
         logger.debug(query);
@@ -282,7 +283,7 @@ public class OLSClient implements Client {
      */
     public List<Term> getTermParents(Identifier termOBOId, String ontologyId, int distance) throws RestClientException {
         List<Term> terms = new ArrayList<Term>();
-        String query = String.format("%s://%s/api/ontologies/%s/terms?obo_id=%s",
+        String query = String.format("%s://%s/ols/api/ontologies/%s/terms?obo_id=%s",
                 config.getProtocol(), config.getHostName(), ontologyId, termOBOId.getIdentifier());
 
         logger.debug(query);
@@ -334,14 +335,14 @@ public class OLSClient implements Client {
     private SearchQuery searchIdQuery(String identifier, String ontologyID, int page) throws RestClientException {
 
 
-        String query = String.format("%s://%s/api/search?q=*%s*&" + getFieldList()
+        String query = String.format("%s://%s/ols/api/search?q=*%s*&" + getFieldList()
                 + "&rows=%s&start=%s",
                 config.getProtocol(), config.getHostName(), identifier, Constants.SEARCH_PAGE_SIZE, page);
 
 
 
         if (ontologyID != null && !ontologyID.isEmpty())
-            query = String.format("%s://%s/api/search?q=%s&exact=on&" + getFieldList()
+            query = String.format("%s://%s/ols/api/search?q=%s&exact=on&" + getFieldList()
                 + "&rows=%s&start=%s&ontology=%s",
                 config.getProtocol(), config.getHostName(), identifier, Constants.SEARCH_PAGE_SIZE, page, ontologyID);
 
@@ -367,7 +368,7 @@ public class OLSClient implements Client {
      * @return Term
      */
     public Term getTermQueryByOBOId(String termOBOId, String ontologyId) {
-        String url = String.format("%s://%s/api/ontologies/%s/terms?obo_id=%s",
+        String url = String.format("%s://%s/ols/api/ontologies/%s/terms?obo_id=%s",
                 config.getProtocol(), config.getHostName(), ontologyId, termOBOId);
 
         logger.debug(url);
@@ -403,7 +404,7 @@ public class OLSClient implements Client {
     }
 
     private OntologyQuery getOntologyQuery(int page) throws RestClientException {
-        String query = String.format("%s://%s/api/ontologies?page=%s&size=%s",
+        String query = String.format("%s://%s/ols/api/ontologies?page=%s&size=%s",
                 config.getProtocol(), config.getHostName(), page, Constants.ONTOLOGY_PAGE_SIZE);
         logger.debug(query);
 
@@ -441,7 +442,7 @@ public class OLSClient implements Client {
 
     private TermQuery getRootQuery(int page, String ontologyID) {
 
-        String query = String.format("%s://%s/api/ontologies/%s/terms/roots/?page=%s&size=%s",
+        String query = String.format("%s://%s/ols/api/ontologies/%s/terms/roots/?page=%s&size=%s",
                 config.getProtocol(), config.getHostName(), ontologyID, page, Constants.TERM_PAGE_SIZE);
 
         logger.debug(query);
@@ -451,7 +452,7 @@ public class OLSClient implements Client {
 
     private TermQuery getTermQuery(int page, String ontologyID) {
 
-        String query = String.format("%s://%s/api/ontologies/%s/terms/?page=%s&size=%s",
+        String query = String.format("%s://%s/ols/api/ontologies/%s/terms/?page=%s&size=%s",
                 config.getProtocol(), config.getHostName(), ontologyID, page, Constants.TERM_PAGE_SIZE);
 
         logger.debug(query);
@@ -747,11 +748,11 @@ public class OLSClient implements Client {
     private SearchQuery getSearchQuery(int page, String name, String ontology, boolean exactMatch, String childrenOf, boolean obsolete) throws RestClientException {
         String query;
 
-        query = String.format("%s://%s/api/search?q=%s&" +
-                this.getQueryField()
-                + "&rows=%s&start=%s&"
-                + this.getFieldList() ,
-                config.getProtocol(), config.getHostName(), name, Constants.SEARCH_PAGE_SIZE, page);
+        query = String.format("q=%s&" +
+                        this.getQueryField()
+                        + "&rows=%s&start=%s&"
+                        + this.getFieldList() ,
+                name, Constants.SEARCH_PAGE_SIZE, page);
 
         if (ontology != null && !ontology.isEmpty())
             query += "&ontology=" + ontology;
@@ -767,7 +768,13 @@ public class OLSClient implements Client {
             query += "&obsoletes=true";
 
         logger.debug(query);
-        return this.restTemplate.getForObject(query, SearchQuery.class);
+        URI uri;
+        try {
+            uri = new URI(config.getProtocol(), config.getHostName(),"/ols/api/search", query, null);
+        } catch (URISyntaxException e) {
+            return this.restTemplate.getForObject(query, SearchQuery.class);
+        }
+        return this.restTemplate.getForObject(uri, SearchQuery.class);
     }
 
     private RetrieveTermQuery getRetrieveQuery(String iri, String ontology) throws RestClientException {
@@ -775,10 +782,9 @@ public class OLSClient implements Client {
         if(ontology == null || ontology.isEmpty()){
             throw new IllegalArgumentException("The term's ontology must not be null or empty!");
         }
-
         String query;
 
-        query = String.format("%s://%s/api/ontologies/%s/terms?iri=%s",
+        query = String.format("%s://%s/ols/api/ontologies/%s/terms?iri=%s",
                 config.getProtocol(), config.getHostName(), ontology, iri);
 
         logger.debug(query);
@@ -788,7 +794,7 @@ public class OLSClient implements Client {
     private SearchQuery getSearchQuerySimple(int page, String name, String ontology, boolean exactMatch, String childrenOf, String queryField, String fieldList) throws RestClientException {
         String query;
 
-        query = String.format("%s://%s/api/search?q=%s&" +
+        query = String.format("%s://%s/ols/api/search?q=%s&" +
                         queryField
                         + "&rows=%s&start=%s&"
                         + fieldList ,
@@ -903,7 +909,7 @@ public class OLSClient implements Client {
     }
 
     public Ontology getOntology(String ontologyId) throws RestClientException {
-        String query = String.format("%s://%s/api/ontologies/%s",
+        String query = String.format("%s://%s/ols/api/ontologies/%s",
                 config.getProtocol(), config.getHostName(), ontologyId);
         logger.debug(query);
         Ontology ontology = this.restTemplate.getForObject(query, Ontology.class);
