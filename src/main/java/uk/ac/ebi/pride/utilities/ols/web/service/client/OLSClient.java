@@ -496,7 +496,7 @@ public class OLSClient implements Client {
 
     /**
      * This function retrieve all the terms from an specific ontology and perform a search in the client side.
-     * In the future would be great to repleace the current functionality with the search capabilities in the ols.
+     * In the future would be great to replace the current functionality with the search capabilities in the ols.
      *
      * @param partialName     Substring to lookup in the name term
      * @param ontologyID the ontology ID.
