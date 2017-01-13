@@ -36,28 +36,36 @@ public class OLSClientTest {
     @Test
     public void testGetOntologyNames() throws Exception {
         List<Ontology> ontologies = olsClient.getOntologies();
-        logger.info(ontologies.toString());
+        for (Ontology ontology : ontologies) {
+            logger.info(ontology.toString());
+        }
         Assert.assertTrue(ontologies.size() > 0);
     }
 
     @Test
     public void testGetAllTermsFromOntology() throws Exception {
         List<Term> terms = olsClient.getAllTermsFromOntology("ms");
-        logger.info(terms.toString());
+        for (Term term : terms) {
+            logger.info(term.getTermOBOId().getIdentifier());
+        }
         Assert.assertTrue(terms.size() > 0);
     }
 
     @Test
     public void testGetRootTerms() throws Exception {
         List<Term> rootTerms = olsClient.getRootTerms("ms");
-        logger.info(rootTerms.toString());
+        for (Term term : rootTerms) {
+            logger.info(term.getTermOBOId().getIdentifier());
+        }
         Assert.assertTrue(rootTerms.size() > 0);
     }
 
     @Test
     public void testGetTermsByName() throws Exception {
         List<Term> terms = olsClient.getTermsByName("modification", "ms", false);
-        logger.info(terms.toString());
+        for (Term term : terms) {
+            logger.info(term.getTermOBOId().getIdentifier());
+        }
         Assert.assertTrue(terms.size() > 0);
         terms = olsClient.getTermsByName("modification", "ms", true);
         Iterator iterator = terms.iterator();
@@ -68,7 +76,9 @@ public class OLSClientTest {
     @Test
     public void testGetTermChildren() throws Exception {
         List<Term> children = olsClient.getTermChildren(new Identifier("MS:1001143", Identifier.IdentifierType.OBO), "ms", 1);
-        logger.info(children.toString());
+        for (Term term : children) {
+            logger.info(term.getTermOBOId().getIdentifier());
+        }
         Assert.assertTrue(contains(children, new Identifier("MS:1001568", Identifier.IdentifierType.OBO)));
     }
 
@@ -96,17 +106,17 @@ public class OLSClientTest {
 
     @Test
     public void testGetTermsByAnnotationData() throws Exception {
-
-        List<Term> annotations = olsClient.getTermsByAnnotationData("mod","DiffAvg", 30, 140);
-
-        Assert.assertTrue(annotations.size() == 303);
+        List<Term> annotations = olsClient.getTermsByAnnotationData("mod","DiffAvg", 0, 900);
+        Assert.assertTrue(annotations.size() == 808);
 
     }
 
     @Test
     public void testGetTermParents() throws Exception {
         List<Term> parents = olsClient.getTermParents(new Identifier("GO:0000990", Identifier.IdentifierType.OBO), "GO", 1);
-        logger.info(parents.toString());
+        for (Term term : parents) {
+            logger.info(term.getTermOBOId().getIdentifier());
+        }
         Assert.assertTrue(contains(parents, new Identifier("GO:0000988", Identifier.IdentifierType.OBO)));
     }
 
@@ -114,9 +124,7 @@ public class OLSClientTest {
     public void testGetExactTerm() throws Exception {
         String termLabel = "allosteric change in dynamics";
         String ontologyName = "mi";
-
         Term term = olsClient.getExactTermByName(termLabel, ontologyName);
-
         assertNotNull(term);
         assertEquals(term.getLabel(), termLabel);
         assertEquals(term.getOntologyName(), ontologyName);
@@ -144,16 +152,12 @@ public class OLSClientTest {
         String termName = "liver";
         String ontologyName = "efo";
         List <Term > terms = olsClient.getExactTermsByName(termName, null);
-
         Assert.assertNotNull(terms);
         Assert.assertTrue(!terms.isEmpty());
-
         for (Term term : terms){
             Assert.assertTrue(term.getLabel().toLowerCase().contains(termName));
         }
-
         terms = olsClient.getExactTermsByName(termName, ontologyName);
-
         Assert.assertNotNull(terms);
         Assert.assertTrue(!terms.isEmpty());
         Assert.assertTrue(terms.size() == 1);
@@ -168,13 +172,9 @@ public class OLSClientTest {
         String parentTerm = "http://www.ebi.ac.uk/efo/EFO_0000635"; //organism part
         List <Term > termsFromParent = olsClient.getExactTermsByNameFromParent(termName, null, parentTerm);
         List <Term > terms = olsClient.getExactTermsByName(termName, null);
-
         Assert.assertNotNull(termsFromParent);
         Assert.assertNotEquals(termsFromParent.size(), terms.size());
-
-
         terms = olsClient.getExactTermsByNameFromParent(termName, ontologyName, parentTerm);
-
         Assert.assertNotNull(terms);
         Assert.assertTrue(!terms.isEmpty());
         Assert.assertEquals(terms.get(0).getIri().getIdentifier(),"http://purl.obolibrary.org/obo/UBERON_0002107");
@@ -184,25 +184,18 @@ public class OLSClientTest {
 
     @Test
     public void testGetOntologyFromId(){
-
         Ontology ontology = olsClient.getOntologyFromId(URI.create("http://www.ebi.ac.uk/efo"));
         assertEquals(ontology.getNamespace(),"efo");
-
         ontology = olsClient.getOntologyFromId(URI.create("http://purl.obolibrary.org/obo/pride_cv.obo"));
         assertEquals(ontology.getNamespace(),"pride");
-
         ontology = olsClient.getOntologyFromId(URI.create("http://purl.enanomapper.org/onto/enanomapper.owl"));
         assertEquals(ontology.getNamespace(),"enm");
-
         ontology = olsClient.getOntologyFromId(URI.create("file:/C:/Lea/ontologies/environnement/leo.obo"));
         assertEquals(ontology.getNamespace(),"eol");
-
         ontology = olsClient.getOntologyFromId(URI.create("http://www.bio.ntnu.no/ontology/GeXO/gexo.owl"));
         assertEquals(ontology.getNamespace(),"gexo");
-
         ontology = olsClient.getOntologyFromId(URI.create("http://purl.obolibrary.org/obo/go"));
         assertEquals(ontology.getNamespace(),"go");
-
     }
 
 
@@ -216,7 +209,6 @@ public class OLSClientTest {
         Assert.assertEquals("PubMed is designed to provide access to citations from biomedical literature. The data can be found at both NCBI PubMed and Europe PubMed Central. \n" +
                 "http://www.ncbi.nlm.nih.gov/pubmed\n" +
                 "http://europepmc.org", metadata1.get("definition"));
-
         Identifier identifier2 = new Identifier("MOD:01161", Identifier.IdentifierType.OBO);
         Map metadata2 = olsClient.getMetaData(identifier2, "mod");
         Map synonyms = (Map) metadata2.get("synonym");
@@ -240,7 +232,6 @@ public class OLSClientTest {
 
     @Test
     public void testGetLabelByIriString(){
-
         String iri = "http://www.orpha.net/ORDO/Orphanet_101150";
         String foundLabel = "";
         List<Term> terms = olsClient.getExactTermsByIriString(iri);
@@ -249,9 +240,7 @@ public class OLSClientTest {
                 foundLabel = term.getLabel();
             }
         }
-
         assertTrue(foundLabel.equals("Autosomal recessive dopa-responsive dystonia"));
-
     }
 
     @Test
@@ -259,7 +248,6 @@ public class OLSClientTest {
         String iri = "http://edamontology.org/data_0007";
         List<Term> terms = olsClient.getExactTermsByIriStringWithObsolete(iri);
         Term obsoleteTerm = null;
-
         if (terms != null && !terms.isEmpty()) {
             for (Term term : terms) {
                 if (term.isDefinedOntology()) {
@@ -270,10 +258,8 @@ public class OLSClientTest {
                 obsoleteTerm = terms.get(0);
             }
         }
-
         String ontology = obsoleteTerm.getOntologyName();
         obsoleteTerm = olsClient.retrieveTerm(iri, ontology);
-
         assertTrue(olsClient.isObsolete(obsoleteTerm));
     }
 }
