@@ -768,6 +768,9 @@ public class OLSClient implements Client {
     public Term getReplacedBy(Term term){
         if(isObsolete(term)){
             String termReplacedBy = ((ObsoleteTerm) term).getTermReplacedBy();
+            if(termReplacedBy == null || termReplacedBy.isEmpty()){
+                return null;
+            }
             return retrieveTerm(termReplacedBy, null);
         }
         return null;

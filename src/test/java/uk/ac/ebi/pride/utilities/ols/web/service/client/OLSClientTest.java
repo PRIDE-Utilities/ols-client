@@ -290,7 +290,7 @@ public class OLSClientTest {
         termiri = term.getIri().getIdentifier();
         assertEquals("http://purl.obolibrary.org/obo/PO_0025197", termiri);
 
-        id = "PO_0025197";
+        id = "PW_0002550";
         term = olsClient.getReplacedBy(id);
         assertNull(term);
     }
