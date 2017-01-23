@@ -14,9 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Yasset Perez-Riverol (ypriverol@gmail.com)
@@ -273,5 +271,27 @@ public class OLSClientTest {
         obsoleteTerm = olsClient.retrieveTerm(iri, ontology);
 
         assertTrue(olsClient.isObsolete(obsoleteTerm));
+    }
+
+    @Test
+    public void testReplacedBy(){
+        String id = "EFO_0005099";
+        Term term = olsClient.getReplacedBy(id);
+        String termiri = term.getIri().getIdentifier();
+        assertEquals("http://purl.obolibrary.org/obo/PO_0025197", termiri);
+
+        id = "EFO:0005099";
+        term = olsClient.getReplacedBy(id);
+        termiri = term.getIri().getIdentifier();
+        assertEquals("http://purl.obolibrary.org/obo/PO_0025197", termiri);
+
+        id = "http://www.ebi.ac.uk/efo/EFO_0005099";
+        term = olsClient.getReplacedBy(id);
+        termiri = term.getIri().getIdentifier();
+        assertEquals("http://purl.obolibrary.org/obo/PO_0025197", termiri);
+
+        id = "PO_0025197";
+        term = olsClient.getReplacedBy(id);
+        assertNull(term);
     }
 }

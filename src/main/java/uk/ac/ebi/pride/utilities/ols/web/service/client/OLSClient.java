@@ -676,14 +676,18 @@ public class OLSClient implements Client {
     /**
      * Retrieves a specific term given its iri as a String and the ontology it belongs to
      *
-     * @param iri the terms iri, i.e. http://www.ebi.ac.uk/efo/EFO_0000635
+     * @param id the term id, whether it is obo, shor or iri i.e. http://www.ebi.ac.uk/efo/EFO_0000635, EFO_0000635 or EFO:0000635
      * @param ontology the ontology the term belongs to, i.e. efo
      * @return the Term we are looking for. Can also be an ObsoleteTerm
      * @throws RestClientException
      */
-    public Term retrieveTerm(String iri, String ontology) throws RestClientException {
-
-        RetrieveTermQuery currentTermQuery = getRetrieveQuery(iri, ontology);
+    public Term retrieveTerm(String id, String ontology) throws RestClientException {
+        RetrieveTermQuery currentTermQuery;
+        if(ontology == null || ontology.isEmpty()){
+            currentTermQuery = getRetrieveQuery(id);
+        } else {
+            currentTermQuery = getRetrieveQuery(id, ontology);
+        }
         List<SearchResult> terms = new ArrayList<SearchResult>();
         if (currentTermQuery != null && currentTermQuery.getResponse() != null && currentTermQuery.getResponse().getSearchResults() != null) {
             terms.addAll(Arrays.asList(currentTermQuery.getResponse().getSearchResults()));
@@ -702,7 +706,7 @@ public class OLSClient implements Client {
                             termResult.getIsDefiningOntology(),
                             termResult.getOboDefinitionCitation(),
                             termResult.getAnnotation(),
-                            true);
+                            true, termResult.getTermReplacedBy());
                 }
                 else {
                     term = new Term(termResult.getIri(), termResult.getName(), termResult.getDescription(),
@@ -727,13 +731,46 @@ public class OLSClient implements Client {
      * @return true if the term is annotated as obsolete
      * @throws RestClientException if there are problems connecting to the REST service.
      */
-    public boolean isObsolete(Term term){
+    public boolean isObsolete(Term term) throws RestClientException{
+        if (term == null || term.getIri() == null){
+            return false;
+        }
         Term obsoleteTerm = retrieveTerm(term.getIri().getIdentifier(), term.getOntologyName());
         if (obsoleteTerm != null && obsoleteTerm instanceof ObsoleteTerm){
             return true;
         } else {
             return false;
         }
+    }
+
+    /**
+     * If the given term is obsolete and has a reference to it's replacement
+     return the replacement
+
+     * @param id the String of the id of the term we are looking for a replacement for
+     * @return the term to be replaced with, null if nothing found
+     */
+    public Term getReplacedBy(String id){
+        Term term = retrieveTerm(id, null);
+        if (term != null) {
+            return getReplacedBy(term);
+        }
+        return null;
+    }
+
+    /**
+     * If the given term is obsolete and has a reference to it's replacement
+     return the replacement
+     *
+     * @param term the term that we want to find a replacement for
+     * @return the Term that it was replaced by, null if nothing found
+     */
+    public Term getReplacedBy(Term term){
+        if(isObsolete(term)){
+            String termReplacedBy = ((ObsoleteTerm) term).getTermReplacedBy();
+            return retrieveTerm(termReplacedBy, null);
+        }
+        return null;
     }
 
     private Term searchByExactTerm(String exactName, String ontologyId) throws RestClientException {
@@ -780,18 +817,46 @@ public class OLSClient implements Client {
         return this.restTemplate.getForObject(uri, SearchQuery.class);
     }
 
-    private RetrieveTermQuery getRetrieveQuery(String iri, String ontology) throws RestClientException {
+    private RetrieveTermQuery getRetrieveQuery(String id, String ontology) throws RestClientException {
 
         if(ontology == null || ontology.isEmpty()){
             throw new IllegalArgumentException("The term's ontology must not be null or empty!");
         }
         String query;
 
-        query = String.format("%s://%s/api/ontologies/%s/terms?iri=%s",
-                config.getProtocol(), config.getHostName(), ontology, iri);
+        query = String.format("iri=%s",
+                        id);
 
         logger.debug(query);
-        return this.restTemplate.getForObject(query, RetrieveTermQuery.class);
+        URI uri;
+        try {
+            String hostname = config.getHostName().split("/")[0]; //e.g. www.ebi.ac.uk
+            String hostnamePath = config.getHostName().split("/")[1]; //e.g. ols
+
+            uri = new URI(config.getProtocol(), hostname,"/" + hostnamePath + "/api/ontologies/" + ontology + "/terms", query, null);
+        } catch (URISyntaxException e) {
+            return this.restTemplate.getForObject(query, RetrieveTermQuery.class);
+        }
+        return this.restTemplate.getForObject(uri, RetrieveTermQuery.class);
+    }
+
+    private RetrieveTermQuery getRetrieveQuery(String id) throws RestClientException {
+        String query;
+
+        query = String.format("id=%s",
+                        id);
+
+        logger.debug(query);
+        URI uri;
+        try {
+            String hostname = config.getHostName().split("/")[0]; //e.g. www.ebi.ac.uk
+            String hostnamePath = config.getHostName().split("/")[1]; //e.g. ols
+
+            uri = new URI(config.getProtocol(), hostname,"/" + hostnamePath + "/api/terms", query, null);
+        } catch (URISyntaxException e) {
+            return this.restTemplate.getForObject(query, RetrieveTermQuery.class);
+        }
+        return this.restTemplate.getForObject(uri, RetrieveTermQuery.class);
     }
 
     private SearchQuery getSearchQuerySimple(int page, String name, String ontology, boolean exactMatch, String childrenOf, String queryField, String fieldList) throws RestClientException {

@@ -46,6 +46,9 @@ public class SearchResult {
     @JsonProperty("annotation")
     Annotation annotation;
 
+    @JsonProperty("term_replaced_by")
+    String termReplacedBy;
+
 
     @JsonProperty("obo_definition_citation")
     OboDefinitionCitation[] oboDefinitionCitation;
@@ -136,6 +139,14 @@ public class SearchResult {
 
     public Annotation getAnnotation() {
         return annotation;
+    }
+
+    public String getTermReplacedBy() {
+        return termReplacedBy;
+    }
+
+    public void setTermReplacedBy(String termReplacedBy) {
+        this.termReplacedBy = termReplacedBy;
     }
 
     public void setAnnotation(Annotation annotation) {
