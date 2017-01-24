@@ -176,7 +176,7 @@ public class OLSClient implements Client {
      */
     public Term getTermByIRIId(String iriId, String ontologyId) throws RestClientException {
 
-        String url = String.format("%s://%s/api/ontologies/%s/terms/%s",
+        String url = String.format("%s://%s/api/ontologies/%s/terms?iri=%s",
                 config.getProtocol(), config.getHostName(), ontologyId, iriId);
 
         logger.debug(url);
@@ -682,12 +682,8 @@ public class OLSClient implements Client {
      * @throws RestClientException
      */
     public Term retrieveTerm(String id, String ontology) throws RestClientException {
-        RetrieveTermQuery currentTermQuery;
-        if(ontology == null || ontology.isEmpty()){
-            currentTermQuery = getRetrieveQuery(id);
-        } else {
-            currentTermQuery = getRetrieveQuery(id, ontology);
-        }
+        RetrieveTermQuery currentTermQuery = getRetrieveQuery(id);
+
         List<SearchResult> terms = new ArrayList<SearchResult>();
         if (currentTermQuery != null && currentTermQuery.getResponse() != null && currentTermQuery.getResponse().getSearchResults() != null) {
             terms.addAll(Arrays.asList(currentTermQuery.getResponse().getSearchResults()));
@@ -721,6 +717,11 @@ public class OLSClient implements Client {
                 }
             }
 
+            if(ontology != null && !ontology.isEmpty()){
+                if(!term.getOntologyName().toLowerCase().equals(ontology)){
+                    return null;
+                }
+            }
         return term;
     }
 
@@ -747,26 +748,12 @@ public class OLSClient implements Client {
      * If the given term is obsolete and has a reference to it's replacement
      return the replacement
 
-     * @param id the String of the id of the term we are looking for a replacement for
+     * @param termId the String of the id of the term we are looking for a replacement for
      * @return the term to be replaced with, null if nothing found
      */
-    public Term getReplacedBy(String id){
-        Term term = retrieveTerm(id, null);
-        if (term != null) {
-            return getReplacedBy(term);
-        }
-        return null;
-    }
-
-    /**
-     * If the given term is obsolete and has a reference to it's replacement
-     return the replacement
-     *
-     * @param term the term that we want to find a replacement for
-     * @return the Term that it was replaced by, null if nothing found
-     */
-    public Term getReplacedBy(Term term){
-        if(isObsolete(term)){
+    public Term getReplacedBy(String termId){
+        if(isObsolete(termId)){
+            Term term = retrieveTerm(termId, null);
             String termReplacedBy = ((ObsoleteTerm) term).getTermReplacedBy();
             if(termReplacedBy == null || termReplacedBy.isEmpty()){
                 return null;
@@ -951,14 +938,18 @@ public class OLSClient implements Client {
 
     /**
      * This method checks if a term is obsolete or not.
-     * @param termOBOId  The OBOId of the Term in the ols ontology
+     * @param termId  The Id of the Term in the ols ontology (short, obo, iri)
      * @param ontologyID the ontology ID
      * @return true if the term is obsolete, if the term is not found in the ontology the function
      * return null, also if the value is not found.
      */
-    public Boolean isObsolete(String termOBOId, String ontologyID) throws RestClientException {
-        Term term = getTermById(new Identifier(termOBOId, Identifier.IdentifierType.OBO), ontologyID);
+    public Boolean isObsolete(String termId, String ontologyID) throws RestClientException {
+        Term term = retrieveTerm(termId, ontologyID);
+        return isObsolete(term);
+    }
 
+    public Boolean isObsolete(String termId) throws RestClientException {
+        Term term = retrieveTerm(termId, null);
         return isObsolete(term);
     }
 

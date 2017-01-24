@@ -90,14 +90,6 @@ public class OLSClientTest {
     }
 
     @Test
-    public void testIsObsolete() throws Exception {
-
-        Boolean obsolete = olsClient.isObsolete("MS:1001057", "ms");
-        Assert.assertTrue(obsolete);
-
-    }
-
-    @Test
     public void testGetTermsByAnnotationData() throws Exception {
 
         List<Term> annotations = olsClient.getTermsByAnnotationData("mod","DiffAvg", 30, 140);
@@ -252,25 +244,19 @@ public class OLSClientTest {
 
     @Test
     public void testObsolete(){
-        String iri = "http://edamontology.org/data_0007";
-        List<Term> terms = olsClient.getExactTermsByIriStringWithObsolete(iri);
-        Term obsoleteTerm = null;
+        String id = "http://edamontology.org/data_0007";
+        assertTrue(olsClient.isObsolete(id));
 
-        if (terms != null && !terms.isEmpty()) {
-            for (Term term : terms) {
-                if (term.isDefinedOntology()) {
-                    obsoleteTerm = term;
-                }
-            }
-            if (obsoleteTerm == null){
-                obsoleteTerm = terms.get(0);
-            }
-        }
+        String oboid = "EFO:0005099";
+        assertTrue(olsClient.isObsolete(oboid));
 
-        String ontology = obsoleteTerm.getOntologyName();
-        obsoleteTerm = olsClient.retrieveTerm(iri, ontology);
+        String shortForm = "EFO_0005099";
+        assertTrue(olsClient.isObsolete(shortForm));
 
-        assertTrue(olsClient.isObsolete(obsoleteTerm));
+        String iri = "http://www.ebi.ac.uk/efo/EFO_0005099";
+        assertTrue(olsClient.isObsolete(iri));
+
+        assertTrue(olsClient.isObsolete("MS:1001057", "ms"));
     }
 
     @Test
@@ -290,7 +276,7 @@ public class OLSClientTest {
         termiri = term.getIri().getIdentifier();
         assertEquals("http://purl.obolibrary.org/obo/PO_0025197", termiri);
 
-        id = "PW_0002550";
+        id = "EFO_0000400";
         term = olsClient.getReplacedBy(id);
         assertNull(term);
     }
