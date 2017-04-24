@@ -170,7 +170,7 @@ public class OLSClient implements Client {
     /**
      * Return a Term for an IRI identifier and the ontology Identifier.
      *
-     * @param iriId      RI Identifier in OLS
+     * @param iriId      IRI Identifier in OLS
      * @param ontologyId ontology Identifier
      * @return Term result term from OLS
      * @throws RestClientException if there are problems connecting to the REST service.
