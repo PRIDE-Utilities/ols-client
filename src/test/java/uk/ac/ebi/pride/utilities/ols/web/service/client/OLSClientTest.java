@@ -265,7 +265,7 @@ public class OLSClientTest {
 
     @Test public void testGetTermByIriId() throws Exception {
         Term term = olsClient.getTermById(new Identifier("GO:0031145", Identifier.IdentifierType.OBO), "GO");
-        olsClient.getTermByIRIId(term.getIri().getIdentifier(), term.getOntologyPrefix());
+        term = olsClient.getTermByIRIId(term.getIri().getIdentifier(), term.getOntologyPrefix());
         Assert.assertTrue(term.getLabel().equalsIgnoreCase("anaphase-promoting complex-dependent catabolic process"));
     }
 }

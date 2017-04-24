@@ -185,9 +185,9 @@ public class OLSClient implements Client {
         UriComponents components = builder.build(true);
         URI uri = components.toUri();
         logger.debug("" + uri);
-        TermQuery termQuery = this.restTemplate.getForObject(uri, TermQuery.class);
-        if (termQuery != null && termQuery.getTerms() != null && termQuery.getTerms().length == 1) {
-            result =  termQuery.getTerms()[0];
+        Term term = this.restTemplate.getForObject(uri, Term.class);
+        if (term != null) {
+            result = term;
         }
         return result;
     }
