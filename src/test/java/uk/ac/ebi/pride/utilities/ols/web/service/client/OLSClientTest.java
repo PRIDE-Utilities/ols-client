@@ -39,10 +39,8 @@ public class OLSClientTest {
     }
 
     @Test
-    @Ignore
-    //Ignoring as test takes a long time to complete
     public void testGetAllTermsFromOntology() throws Exception {
-        List<Term> terms = olsClient.getAllTermsFromOntology("ms");
+        List<Term> terms = olsClient.getAllTermsFromOntology("pride");
         logger.info(terms.toString());
         Assert.assertTrue(terms.size() > 0);
     }
