@@ -320,4 +320,11 @@ public class OLSClientTest {
         term = olsClient.getReplacedBy(id);
         assertNull(term);
     }
+
+    @Test
+    public void testGetTermByIriId() throws Exception {
+        Term term = olsClient.getTermById(new Identifier("GO:0031145", Identifier.IdentifierType.OBO), "GO");
+        term = olsClient.getTermByIRIId(term.getIri().getIdentifier(), term.getOntologyPrefix());
+        Assert.assertTrue(term.getTermOBOId().getIdentifier().equalsIgnoreCase("GO:0031145"));
+    }
 }
