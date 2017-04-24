@@ -26,13 +26,10 @@ public class OLSClientTest {
     private static final Logger logger = LoggerFactory.getLogger(OLSClientTest.class);
 
     @Test
-    @Ignore
-    //Ignoring as test uses ontology label that may change and break the test
     public void testGetTermById() throws Exception {
         Term term = olsClient.getTermById(new Identifier("MS:1001767", Identifier.IdentifierType.OBO), "MS");
-        Assert.assertTrue(term.getLabel().equalsIgnoreCase("nanoACQUITY UPLC System with 1D Technology"));
+        Assert.assertTrue(term.getTermOBOId().getIdentifier().equalsIgnoreCase("MS:1001767"));
     }
-
 
     @Test
     public void testGetOntologyNames() throws Exception {
