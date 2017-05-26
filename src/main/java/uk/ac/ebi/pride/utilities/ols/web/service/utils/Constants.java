@@ -11,5 +11,5 @@ public class Constants {
     public static final String REFERENCE_SEPARATOR = ":";
     public static final String OLS_PROTOCOL = "http";
     public static final String OLS_SERVER = "www.ebi.ac.uk/ols/";
-    public static final String OLS_SERVER_DEV = "snarf.ebi.ac.uk:8980/ols-beta"; // wwwdev.ebi.ac.uk/ols/
+    public static final String OLS_SERVER_DEV = "wwwdev.ebi.ac.uk/ols/";
 }
