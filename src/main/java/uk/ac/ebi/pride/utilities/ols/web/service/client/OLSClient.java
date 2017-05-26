@@ -4,6 +4,8 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ebi.pride.utilities.ols.web.service.config.AbstractOLSWsConfig;
 import uk.ac.ebi.pride.utilities.ols.web.service.model.*;
 import uk.ac.ebi.pride.utilities.ols.web.service.utils.Constants;
@@ -169,27 +171,28 @@ public class OLSClient implements Client {
     }
 
     /**
-     * Return a Term for a short name Identifier and the ontology Identifier.
+     * Return a Term for an IRI identifier and the ontology Identifier.
      *
-     * @param iriId      short term Identifier in OLS
+     * @param iriId      IRI Identifier in OLS
      * @param ontologyId ontology Identifier
-     * @return Term
+     * @return Term result term from OLS
      * @throws RestClientException if there are problems connecting to the REST service.
      */
     public Term getTermByIRIId(String iriId, String ontologyId) throws RestClientException {
-
-        String query = String.format("iri=%s",
-                iriId);
-
-        logger.debug(query);
-        URI uri = encodeURL("/api/ontologies/" + ontologyId + "/terms", query);
-        TermQuery result = this.restTemplate.getForObject(uri, TermQuery.class);
-
-        if (result != null && result.getTerms() != null && result.getTerms().length == 1) {
-            return result.getTerms()[0];
+        Term result = null;
+        iriId = iriId.replaceAll(":", "%253A");
+        iriId = iriId.replaceAll("/", "%252F");
+        String url = config.getProtocol() + "://" + config.getHostName() +
+            "api/ontologies/" + ontologyId.toLowerCase() + "/terms/";
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).path(iriId);
+        UriComponents components = builder.build(true);
+        URI uri = components.toUri();
+        logger.debug("" + uri);
+        Term term = this.restTemplate.getForObject(uri, Term.class);
+        if (term != null) {
+            result = term;
         }
-
-        return null;
+        return result;
     }
 
     public List<String> getTermDescription(Identifier termId, String ontologyId) throws RestClientException {
