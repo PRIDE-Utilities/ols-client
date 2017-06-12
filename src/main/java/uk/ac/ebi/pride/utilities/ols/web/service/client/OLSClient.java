@@ -665,7 +665,7 @@ public class OLSClient implements Client {
      * @throws RestClientException
      */
     public Term retrieveTerm(String id, String ontology) throws RestClientException {
-        RetrieveTermQuery currentTermQuery = getRetrieveQuery(id);
+        RetrieveTermQuery currentTermQuery = getRetrieveQuery(id, ontology);
 
         List<SearchResult> terms = new ArrayList<SearchResult>();
         if (currentTermQuery != null && currentTermQuery.getResponse() != null && currentTermQuery.getResponse().getSearchResults() != null) {
@@ -732,16 +732,17 @@ public class OLSClient implements Client {
      return the replacement
 
      * @param termId the String of the id of the term we are looking for a replacement for
+     * @param ontology the ontology the term belongs to
      * @return the term to be replaced with, null if nothing found
      */
-    public Term getReplacedBy(String termId){
-        if(isObsolete(termId)){
-            Term term = retrieveTerm(termId, null);
+    public Term getReplacedBy(String termId, String ontology){
+        if(isObsolete(termId, ontology)){
+            Term term = retrieveTerm(termId, ontology);
             String termReplacedBy = ((ObsoleteTerm) term).getTermReplacedBy();
             if(termReplacedBy == null || termReplacedBy.isEmpty()){
                 return null;
             }
-            return retrieveTerm(termReplacedBy, null);
+            return retrieveTerm(termReplacedBy, term.getOntologyName());
         }
         return null;
     }
@@ -788,26 +789,47 @@ public class OLSClient implements Client {
         if(ontology == null || ontology.isEmpty()){
             throw new IllegalArgumentException("The term's ontology must not be null or empty!");
         }
-        String query;
 
-        query = String.format("iri=%s",
-                        id);
+        String iri = null;
+        if(!id.contains("http") && !id.contains("/")){
+             iri = resolveIri(id);
+        }
+
+        if (iri == null){
+            iri = id;
+        }
+
+        String query = String.format("iri=%s",
+                iri);
 
         logger.debug(query);
         URI uri = encodeURL("/api/ontologies/" + ontology + "/terms", query);
         return this.restTemplate.getForObject(uri, RetrieveTermQuery.class);
     }
 
-    private RetrieveTermQuery getRetrieveQuery(String id) throws RestClientException {
+    private String resolveIri(String id) throws RestClientException {
         String query;
 
         query = String.format("id=%s",
-                        id);
+                id);
 
         logger.debug(query);
         URI uri = encodeURL("/api/terms", query);
-        return this.restTemplate.getForObject(uri, RetrieveTermQuery.class);
+        RetrieveTermQuery currentTermQuery = this.restTemplate.getForObject(uri, RetrieveTermQuery.class);
+        List<SearchResult> terms = new ArrayList<SearchResult>();
+        if (currentTermQuery != null && currentTermQuery.getResponse() != null && currentTermQuery.getResponse().getSearchResults() != null) {
+            terms.addAll(Arrays.asList(currentTermQuery.getResponse().getSearchResults()));
+        }
+
+        for (int i = 0; i < terms.size(); i++) {
+            if (terms.get(i).getName() != null) {
+                SearchResult termResult = terms.get(i);
+                return termResult.getIri().getIdentifier();
+            }
+        }
+        return null;
     }
+
 
     private List<Term> getTermChildrenMap(Href childrenHRef, int distance) {
         List<Term> children = new ArrayList<Term>();
@@ -885,6 +907,12 @@ public class OLSClient implements Client {
         return isObsolete(term);
     }
 
+    @Deprecated
+    /**
+     * Retrieving a term by term id without specifying it's ontology can lead to wrong results
+     * since the same term can exist in one ontology as an obsolete term and in another as a
+     * non obsolete term
+     */
     public Boolean isObsolete(String termId) throws RestClientException {
         Term term = retrieveTerm(termId, null);
         return isObsolete(term);
