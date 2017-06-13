@@ -801,7 +801,7 @@ public class OLSClient implements Client {
         if(termReplacedBy == null || termReplacedBy.isEmpty()){
             return null;
         }
-        return retrieveTerm(termReplacedBy, term.getOntologyName());
+        return retrieveTerm(termReplacedBy.trim(), term.getOntologyName());
     }
 
     private Term searchByExactTerm(String exactName, String ontologyId) throws RestClientException {
