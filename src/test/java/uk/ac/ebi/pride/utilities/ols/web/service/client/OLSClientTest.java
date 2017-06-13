@@ -235,7 +235,7 @@ public class OLSClientTest {
         ontology = olsClient.getOntologyFromId(URI.create("http://www.bio.ntnu.no/ontology/GeXO/gexo.owl"));
         assertEquals(ontology.getNamespace(),"gexo");
 
-        ontology = olsClient.getOntologyFromId(URI.create("http://purl.obolibrary.org/obo/go"));
+        ontology = olsClient.getOntologyFromId(URI.create("http://purl.obolibrary.org/obo/go.owl"));
         assertEquals(ontology.getNamespace(),"go");
 
     }
@@ -285,7 +285,7 @@ public class OLSClientTest {
     @Test
     public void testObsolete(){
         String id = "http://edamontology.org/data_0007";
-        assertTrue(olsClient.isObsolete(id, "edam"));
+        assertTrue(olsClient.isObsolete(id));
 
         String oboid = "EFO:0005099";
         assertTrue(olsClient.isObsolete(oboid, "efo"));
@@ -297,14 +297,20 @@ public class OLSClientTest {
         assertTrue(olsClient.isObsolete(iri, "efo"));
 
         assertTrue(olsClient.isObsolete("MS:1001057", "ms"));
+
+        assertTrue(olsClient.isObsolete("EFO_0000891"));
     }
 
     @Test
     public void testReplacedBy(){
         String id = "EFO_0005099";
         String ontology = "efo";
-        Term term = olsClient.getReplacedBy(id, ontology);
+        Term term = olsClient.getReplacedBy(id);
         String termiri = term.getIri().getIdentifier();
+        assertEquals("http://purl.obolibrary.org/obo/PO_0025197", termiri);
+
+        term = olsClient.getReplacedBy(id, ontology);
+        termiri = term.getIri().getIdentifier();
         assertEquals("http://purl.obolibrary.org/obo/PO_0025197", termiri);
 
         id = "EFO:0005099";
@@ -322,7 +328,7 @@ public class OLSClientTest {
         assertNull(term);
 
         id = "EFO_0000891";
-        term = olsClient.getReplacedBy(id, ontology);
+        term = olsClient.getReplacedBy(id);
         assertEquals("http://purl.obolibrary.org/obo/UBERON_0000010", term.getIri().getIdentifier());
     }
 }
