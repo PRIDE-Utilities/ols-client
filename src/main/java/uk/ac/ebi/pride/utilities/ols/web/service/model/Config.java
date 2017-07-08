@@ -3,6 +3,8 @@ package uk.ac.ebi.pride.utilities.ols.web.service.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Arrays;
+
 /**
  * @author Yasset Perez-Riverol (ypriverol@gmail.com)
  * Creation date 02/03/2016
@@ -250,5 +252,33 @@ public class Config {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "Config{" +
+                "id='" + id + '\'' +
+                ", versionIri='" + versionIri + '\'' +
+                ", name='" + name + '\'' +
+                ", namespace='" + namespace + '\'' +
+                ", preferredPrefix='" + preferredPrefix + '\'' +
+                ", description='" + description + '\'' +
+                ", homePage='" + homePage + '\'' +
+                ", version='" + version + '\'' +
+                ", mailingList='" + mailingList + '\'' +
+                ", creators=" + Arrays.toString(creators) +
+                ", annotations=" + annotations +
+                ", fileLocation='" + fileLocation + '\'' +
+                ", reasonerType='" + reasonerType + '\'' +
+                ", oboLims=" + oboLims +
+                ", labelProperty='" + labelProperty + '\'' +
+                ", definitionProperties=" + Arrays.toString(definitionProperties) +
+                ", synonymProperties=" + Arrays.toString(synonymProperties) +
+                ", hierarchicalProperties=" + Arrays.toString(hierarchicalProperties) +
+                ", baseUris=" + Arrays.toString(baseUris) +
+                ", hiddenProperties=" + Arrays.toString(hiddenProperties) +
+                ", internalMetadataProperties=" + Arrays.toString(internalMetadataProperties) +
+                ", skos=" + skos +
+                '}';
     }
 }

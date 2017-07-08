@@ -245,6 +245,7 @@ public class OLSClient implements Client {
     public Ontology getOntologyFromId(URI id){
         List<Ontology> ontologyList = getOntologies();
         for (Ontology ontology : ontologyList){
+            logger.debug(ontology.getConfig().getId());
             if (ontology.getConfig().getId().equals(id.toString())){
                 return ontology;
             }
@@ -1010,7 +1011,8 @@ public class OLSClient implements Client {
     public Set<String> getSynonyms(Identifier identifier, String ontology) throws RestClientException {
         Set<String> synonyms = new HashSet<>();
         Term term = getTermById(identifier, ontology);
-        Collections.addAll(synonyms, term.getSynonyms());
+        if(term != null && term.getSynonyms() != null)
+            Collections.addAll(synonyms, term.getSynonyms());
         return synonyms;
     }
 

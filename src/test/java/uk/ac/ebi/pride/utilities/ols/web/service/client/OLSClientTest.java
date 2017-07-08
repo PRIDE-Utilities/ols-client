@@ -9,10 +9,7 @@ import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfig;
 import uk.ac.ebi.pride.utilities.ols.web.service.model.*;
 
 import java.net.URI;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -154,14 +151,14 @@ public class OLSClientTest {
     }
 
     @Test
-    public void testGetSynonyms() throws Exception {
+    public void testGetOBOSynonyms() throws Exception {
         Identifier identifier = new Identifier("MI:0018", Identifier.IdentifierType.OBO);
-        Set<String> synonyms = olsClient.getSynonyms(identifier, "mi");
-        Assert.assertEquals(synonyms.size(), 9);
+        Map<String,String> synonymsMap = olsClient.getOBOSynonyms(identifier, "mi");
+        Collection<String> synonyms = synonymsMap.keySet();
+        Assert.assertEquals(synonyms.size(), 8);
         Assert.assertTrue(synonyms.contains("classical two hybrid"));
         Assert.assertTrue(synonyms.contains("Gal4 transcription regeneration"));
         Assert.assertTrue(synonyms.contains("yeast two hybrid"));
-        Assert.assertTrue(synonyms.contains("Y2H"));
         Assert.assertTrue(synonyms.contains("two-hybrid"));
         Assert.assertTrue(synonyms.contains("2 hybrid"));
         Assert.assertTrue(synonyms.contains("2-hybrid"));
@@ -215,7 +212,7 @@ public class OLSClientTest {
     @Test
     public void testGetOntologyFromId(){
 
-        Ontology ontology = olsClient.getOntologyFromId(URI.create("http://www.ebi.ac.uk/efo"));
+        Ontology ontology = olsClient.getOntologyFromId(URI.create("http://www.ebi.ac.uk/efo/efo.owl"));
         assertEquals(ontology.getNamespace(),"efo");
 
         ontology = olsClient.getOntologyFromId(URI.create("http://purl.obolibrary.org/obo/pride_cv.obo"));
@@ -239,14 +236,10 @@ public class OLSClientTest {
 
     @Test
     public void testGetMetaData() throws Exception {
-        Identifier identifier1 = new Identifier("MI:0446", Identifier.IdentifierType.OBO);
+        Identifier identifier1 = new Identifier("MI:0018", Identifier.IdentifierType.OBO);
         Map metadata1 = olsClient.getMetaData(identifier1, "mi");
         Assert.assertEquals(1, metadata1.size());
-        Assert.assertNotNull(metadata1.get("definition"));
-        Assert.assertEquals("PubMed is designed to provide access to citations from biomedical literature. The data can be found at both NCBI PubMed and Europe PubMed Central. \n" +
-            "http://www.ncbi.nlm.nih.gov/pubmed\n" +
-            "http://europepmc.org", metadata1.get("definition"));
-
+        Assert.assertNotNull(metadata1.get("synonym"));
         Identifier identifier2 = new Identifier("MOD:01161", Identifier.IdentifierType.OBO);
         Map metadata2 = olsClient.getMetaData(identifier2, "mod");
         Map synonyms = (Map) metadata2.get("synonym");

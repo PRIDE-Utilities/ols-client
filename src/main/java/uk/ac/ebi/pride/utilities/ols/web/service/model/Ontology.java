@@ -168,4 +168,20 @@ public class Ontology {
         }
         return annotations;
     }
+
+    @Override
+    public String toString() {
+        return "Ontology{" +
+                "loadedDate='" + loadedDate + '\'' +
+                ", updatedDate='" + updatedDate + '\'' +
+                ", status='" + status + '\'' +
+                ", message='" + message + '\'' +
+                ", version='" + version + '\'' +
+                ", numberOfTerms=" + numberOfTerms +
+                ", numberOfProperties=" + numberOfProperties +
+                ", numberOfIndividuals=" + numberOfIndividuals +
+                ", config=" + config +
+                ", link=" + link +
+                '}';
+    }
 }
