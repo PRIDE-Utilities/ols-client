@@ -322,6 +322,7 @@ public class OLSClient implements Client {
         return null;
     }
 
+
     public Map<String, String> getTermXrefs(Identifier termId, String ontologyId) throws RestClientException {
         Term term = getTermById(termId, ontologyId);
         Map<String, String> xrefs = new HashMap<String, String>();
