@@ -4,11 +4,15 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ebi.pride.utilities.ols.web.service.config.AbstractOLSWsConfig;
 import uk.ac.ebi.pride.utilities.ols.web.service.model.*;
 import uk.ac.ebi.pride.utilities.ols.web.service.utils.Constants;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.*;
 
@@ -21,13 +25,58 @@ public class OLSClient implements Client {
     protected RestTemplate restTemplate;
     protected AbstractOLSWsConfig config;
 
+    private String queryField;
+    private String fieldList;
+
+    public static final String DEFAULT_QUERY_FIELD = new QueryFields.QueryFieldBuilder()
+            .setLabel()
+            .setSynonym()
+            .build()
+            .toString();
+    public static final String DEFAULT_FIELD_LIST = new FieldList.FieldListBuilder()
+            .setLabel()
+            .setIri()
+            .setScore()
+            .setOntologyName()
+            .setOboId()
+            .setOntologyIri()
+            .setIsDefiningOntology()
+            .setShortForm()
+            .setOntologyPrefix()
+            .setDescription()
+            .setType()
+            .build()
+            .toString();
+
+    public String getQueryField() {
+        if (queryField == null){
+            queryField = DEFAULT_QUERY_FIELD;
+        }
+        return queryField;
+    }
+
+    public void setQueryField(String queryField) {
+        this.queryField = queryField;
+    }
+
+    public String getFieldList() {
+        if (fieldList == null){
+            fieldList = DEFAULT_FIELD_LIST;
+        }
+        return fieldList;
+    }
+
+    public void setFieldList(String fieldList) {
+        this.fieldList = fieldList;
+    }
+
     org.slf4j.Logger logger = LoggerFactory.getLogger(OLSClient.class);
 
 
     /**
      * Default constructor for Archive clients
      *
-     * @param config
+     * @param config configuration to use.
      */
     public OLSClient(AbstractOLSWsConfig config) {
         this.config = config;
@@ -77,16 +126,17 @@ public class OLSClient implements Client {
      * @param termOBOId  OBO Identifier in OLS
      * @param ontologyId ontology Identifier
      * @return Term
-     * @throws RestClientException
+     * @throws RestClientException if there are problems connecting to the REST service.
      */
     public Term getTermByOBOId(String termOBOId, String ontologyId) throws RestClientException {
 
-        String url = String.format("%s://%s/api/ontologies/%s/terms?obo_id=%s",
-                config.getProtocol(), config.getHostName(), ontologyId, termOBOId);
+        String query = String.format("obo_id=%s",
+                termOBOId);
 
-        logger.debug(url);
+        logger.debug(query);
 
-        TermQuery result = this.restTemplate.getForObject(url, TermQuery.class);
+        URI uri = encodeURL("/api/ontologies/" + ontologyId + "/terms", query);
+        TermQuery result = this.restTemplate.getForObject(uri, TermQuery.class);
 
         if (result != null && result.getTerms() != null && result.getTerms().length == 1) {
             return result.getTerms()[0];
@@ -98,19 +148,20 @@ public class OLSClient implements Client {
     /**
      * Return a Term for a short name Identifier and the ontology Identifier.
      *
-     * @param shortTerm  short term Identifier in OLS
+     * @param shortForm  short term Identifier in OLS
      * @param ontologyId ontology Identifier
      * @return Term
-     * @throws RestClientException
+     * @throws RestClientException if there are problems connecting to the REST service.
      */
-    public Term getTermByShortName(String shortTerm, String ontologyId) throws RestClientException {
+    public Term getTermByShortName(String shortForm, String ontologyId) throws RestClientException {
 
-        String url = String.format("%s://%s/api/ontologies/%s/terms?short_term=%s",
-                config.getProtocol(), config.getHostName(), ontologyId, shortTerm);
+        String query = String.format("short_form=%s",
+                shortForm);
 
-        logger.debug(url);
+        logger.debug(query);
 
-        TermQuery result = this.restTemplate.getForObject(url, TermQuery.class);
+        URI uri = encodeURL("/api/ontologies/" + ontologyId + "/terms", query);
+        TermQuery result = this.restTemplate.getForObject(uri, TermQuery.class);
 
         if (result != null && result.getTerms() != null && result.getTerms().length == 1) {
             return result.getTerms()[0];
@@ -120,27 +171,28 @@ public class OLSClient implements Client {
     }
 
     /**
-     * Return a Term for a short name Identifier and the ontology Identifier.
+     * Return a Term for an IRI identifier and the ontology Identifier.
      *
-     * @param iriId      short term Identifier in OLS
+     * @param iriId      IRI Identifier in OLS
      * @param ontologyId ontology Identifier
-     * @return Term
-     * @throws RestClientException
+     * @return Term result term from OLS
+     * @throws RestClientException if there are problems connecting to the REST service.
      */
     public Term getTermByIRIId(String iriId, String ontologyId) throws RestClientException {
-
-        String url = String.format("%s://%s/api/ontologies/%s/terms/%s",
-                config.getProtocol(), config.getHostName(), ontologyId, iriId);
-
-        logger.debug(url);
-
-        TermQuery result = this.restTemplate.getForObject(url, TermQuery.class);
-
-        if (result != null && result.getTerms() != null && result.getTerms().length == 1) {
-            return result.getTerms()[0];
+        Term result = null;
+        iriId = iriId.replaceAll(":", "%253A");
+        iriId = iriId.replaceAll("/", "%252F");
+        String url = config.getProtocol() + "://" + config.getHostName() +
+            "api/ontologies/" + ontologyId.toLowerCase() + "/terms/";
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).path(iriId);
+        UriComponents components = builder.build(true);
+        URI uri = components.toUri();
+        logger.debug("" + uri);
+        Term term = this.restTemplate.getForObject(uri, Term.class);
+        if (term != null) {
+            result = term;
         }
-
-        return null;
+        return result;
     }
 
     public List<String> getTermDescription(Identifier termId, String ontologyId) throws RestClientException {
@@ -158,8 +210,8 @@ public class OLSClient implements Client {
      *
      * @param termId     Term ID in the ontology
      * @param ontologyId The ontology name
-     * @return
-     * @throws RestClientException
+     * @return map of annotation IDs and their corresponding values.
+     * @throws RestClientException if there are problems connecting to the REST service.
      */
     public Map<String, List<String>> getAnnotations(Identifier termId, String ontologyId) throws RestClientException {
         Term term = getTermById(termId, ontologyId);
@@ -172,7 +224,7 @@ public class OLSClient implements Client {
      * This function returns the current ontologies in OLS.
      *
      * @return List
-     * @throws RestClientException
+     * @throws RestClientException if there are problems connecting to the REST service.
      */
     public List<Ontology> getOntologies() throws RestClientException {
         OntologyQuery currentOntologyQuery = getOntologyQuery(0);
@@ -190,52 +242,49 @@ public class OLSClient implements Client {
         return ontologies;
     }
 
+    public Ontology getOntologyFromId(URI id){
+        List<Ontology> ontologyList = getOntologies();
+        for (Ontology ontology : ontologyList){
+            if (ontology.getConfig().getId().equals(id.toString())){
+                return ontology;
+            }
+        }
+        return null;
+    }
+
     /**
      * Retrieve the List of Term for an specific Identifier.
      *
-     * @param termOBOId  Term Identifier
+     * @param termId  Term Identifier
      * @param ontologyId Ontology Name
      * @param distance   Distance to the child (1..n) where the distance is the step to the children.
-     * @return
-     * @throws RestClientException
+     * @return list of Terms.
+     * @throws RestClientException if there are problems connecting to the REST service.
      */
-    public List<Term> getTermChildren(Identifier termOBOId, String ontologyId, int distance) throws RestClientException {
-        List<Term> terms = new ArrayList<Term>();
-        String query = String.format("%s://%s/api/ontologies/%s/terms?obo_id=%s",
-                config.getProtocol(), config.getHostName(), ontologyId, termOBOId.getIdentifier());
-
-        logger.debug(query);
-
-        TermQuery termQuery = this.restTemplate.getForObject(query, TermQuery.class);
-
-        if (termQuery != null && termQuery.getTerms() != null && termQuery.getTerms().length == 1 &&
-                termQuery.getTerms()[0] != null && termQuery.getTerms()[0].getLink() != null &&
-                termQuery.getTerms()[0].getLink().getChildrenRef() != null)
-            terms = getTermChildrenMap(termQuery.getTerms()[0].getLink().getAllChildrenRef(), distance);
+    public List<Term> getTermChildren(Identifier termId, String ontologyId, int distance) throws RestClientException {
+        List<Term> terms = new ArrayList<>();
+        Term term = getTermById(termId, ontologyId);
+        if (term != null && term.getLink() != null && term.getLink().getChildrenRef() != null){
+            terms = getTermChildrenMap(term.getLink().getChildrenRef(), distance);
+        }
         return terms;
     }
 
     /**
      * Retrieve the List of Term for an specific Identifier.
      *
-     * @param termOBOId  Term Identifier
+     * @param termId  Term Identifier
      * @param ontologyId Ontology Name
      * @param distance   Distance to the child (1..n) where the distance is the step to the children.
-     * @return
-     * @throws RestClientException
+     * @return list of Terms.
+     * @throws RestClientException if there are problems connecting to the REST service.
      */
-    public List<Term> getTermParents(Identifier termOBOId, String ontologyId, int distance) throws RestClientException {
-        List<Term> terms = new ArrayList<Term>();
-        String query = String.format("%s://%s/api/ontologies/%s/terms?obo_id=%s",
-                config.getProtocol(), config.getHostName(), ontologyId, termOBOId.getIdentifier());
-
-        logger.debug(query);
-        TermQuery termQuery = this.restTemplate.getForObject(query, TermQuery.class);
-
-        if (termQuery != null && termQuery.getTerms() != null && termQuery.getTerms().length == 1 &&
-                termQuery.getTerms()[0] != null && termQuery.getTerms()[0].getLink() != null &&
-                termQuery.getTerms()[0].getLink().getParentsRef() != null)
-            terms = getTermParentsMap(termQuery.getTerms()[0].getLink().getAllParentsRef(), distance);
+    public List<Term> getTermParents(Identifier termId, String ontologyId, int distance) throws RestClientException {
+        List<Term> terms = new ArrayList<>();
+        Term term = getTermById(termId, ontologyId);
+        if (term != null && term.getLink() != null &&
+                term.getLink().getParentsRef() != null)
+            terms = getTermParentsMap(term.getLink().getParentsRef(), distance);
         return terms;
     }
 
@@ -245,13 +294,11 @@ public class OLSClient implements Client {
      * @param termId     Term id term identifier
      * @param ontologyId ontology Database
      * @return true if the term is annotated as obsolete
-     * @throws RestClientException
+     * @throws RestClientException if there are problems connecting to the REST service.
      */
     public Boolean isObsolete(Identifier termId, String ontologyId) throws RestClientException {
         Term term = getTermById(termId, ontologyId);
-        if (term != null)
-            return term.isObsolete();
-        return null;
+        return isObsolete(term);
     }
 
     public List<Term> searchTermById(String identifier, String ontologyID) throws RestClientException {
@@ -269,9 +316,9 @@ public class OLSClient implements Client {
             }
         }
         for (int i = 0; i < terms.size(); i++)
-            if (terms.get(i).getObo_id() != null && terms.get(i).getName() != null) {
+            if (terms.get(i).getName() != null) {
                 SearchResult termResult = terms.get(i);
-                termResults.add(new Term(termResult.getIri(), termResult.getName(), termResult.getDescription(), termResult.getShort_name(), termResult.getObo_id(), termResult.getOntology_name(), termResult.getOboDefinitionCitation()));
+                termResults.add(new Term(termResult.getIri(), termResult.getName(), termResult.getDescription(), termResult.getShortName(), termResult.getOboId(), termResult.getOntologyName(), termResult.getScore(), termResult.getOntologyIri(), termResult.getIsDefiningOntology(), termResult.getOboDefinitionCitation()));
             }
 
         return termResults;
@@ -280,22 +327,25 @@ public class OLSClient implements Client {
     private SearchQuery searchIdQuery(String identifier, String ontologyID, int page) throws RestClientException {
 
 
-        String query = String.format("%s://%s/api/search?q=*%s*&fieldList=iri,label,short_form,obo_id,ontology_name,ontology_prefix,description,type&rows=%s&start=%s",
-                config.getProtocol(), config.getHostName(), identifier, Constants.SEARCH_PAGE_SIZE, page);
+        String query = String.format("q=*%s*&" + getFieldList()
+                + "&rows=%s&start=%s",
+                identifier, Constants.SEARCH_PAGE_SIZE, page);
 
 
 
         if (ontologyID != null && !ontologyID.isEmpty())
-            query = String.format("%s://%s/api/search?q=%s&exact=on&fieldList=iri,label,short_form,obo_id,ontology_name,ontology_prefix,description,type&rows=%s&start=%s&ontology=%s",
-                    config.getProtocol(), config.getHostName(), identifier, Constants.SEARCH_PAGE_SIZE, page, ontologyID);
+            query = String.format("q=%s&exact=on&" + getFieldList()
+                + "&rows=%s&start=%s&ontology=%s",
+                identifier, Constants.SEARCH_PAGE_SIZE, page, ontologyID);
 
         logger.debug(query);
-        return this.restTemplate.getForObject(query, SearchQuery.class);
+        URI uri = encodeURL("/api/search", query);
+        return this.restTemplate.getForObject(uri, SearchQuery.class);
     }
 
 
     public List<String> getTermDescription(String termId, String ontologyId) throws RestClientException {
-        Term term = getTermQueryByOBOId(termId, ontologyId);
+        Term term = getTermByOBOIdString(termId, ontologyId);
         if (term != null)
             return Arrays.asList(term.getDescription());
         return null;
@@ -303,23 +353,14 @@ public class OLSClient implements Client {
 
     /**
      * This function returns a Term for an obo ID. If a different ID is provided the function will return
-     * NULL value. If the user is interested to use a general identifer it should use the generic
-     * getTermById using an Identifier.
+     * NULL value.
      *
      * @param termOBOId  obo ontology ID
      * @param ontologyId ontology name
      * @return Term
      */
-    public Term getTermQueryByOBOId(String termOBOId, String ontologyId) {
-        String url = String.format("%s://%s/api/ontologies/%s/terms?obo_id=%s",
-                config.getProtocol(), config.getHostName(), ontologyId, termOBOId);
-
-        logger.debug(url);
-
-        TermQuery result = this.restTemplate.getForObject(url, TermQuery.class);
-        if (result != null && result.getTerms() != null && result.getTerms().length == 1 && result.getTerms()[0] != null)
-            return result.getTerms()[0];
-        return null;
+    public Term getTermByOBOIdString(String termOBOId, String ontologyId) {
+       return getTermById(new Identifier(termOBOId, Identifier.IdentifierType.OBO), ontologyId);
     }
 
 
@@ -348,11 +389,11 @@ public class OLSClient implements Client {
     }
 
     private OntologyQuery getOntologyQuery(int page) throws RestClientException {
-        String query = String.format("%s://%s/api/ontologies?page=%s&size=%s",
-                config.getProtocol(), config.getHostName(), page, Constants.ONTOLOGY_PAGE_SIZE);
+        String query = String.format("page=%s&size=%s",
+                page, Constants.ONTOLOGY_PAGE_SIZE);
         logger.debug(query);
-
-        return this.restTemplate.getForObject(query, OntologyQuery.class);
+        URI uri = encodeURL("/api/ontologies", query);
+        return this.restTemplate.getForObject(uri, OntologyQuery.class);
     }
 
     /**
@@ -361,6 +402,7 @@ public class OLSClient implements Client {
      *
      * @param ontologyID Ontology reference
      * @return A map with the Terms
+     * @throws RestClientException if there are problems connecting to the REST service.
      */
     public List<Term> getAllTermsFromOntology(String ontologyID) throws RestClientException {
         return getAllOBOTermsFromOntology(ontologyID);
@@ -385,22 +427,24 @@ public class OLSClient implements Client {
 
     private TermQuery getRootQuery(int page, String ontologyID) {
 
-        String query = String.format("%s://%s/api/ontologies/%s/terms/roots/?page=%s&size=%s",
-                config.getProtocol(), config.getHostName(), ontologyID, page, Constants.TERM_PAGE_SIZE);
+        String query = String.format("page=%s&size=%s",
+                page, Constants.TERM_PAGE_SIZE);
 
         logger.debug(query);
 
-        return this.restTemplate.getForObject(query, TermQuery.class);
+        URI uri = encodeURL("/api/ontologies/" + ontologyID + "/terms/roots/", query);
+        return this.restTemplate.getForObject(uri, TermQuery.class);
     }
 
     private TermQuery getTermQuery(int page, String ontologyID) {
 
-        String query = String.format("%s://%s/api/ontologies/%s/terms/?page=%s&size=%s",
-                config.getProtocol(), config.getHostName(), ontologyID, page, Constants.TERM_PAGE_SIZE);
+        String query = String.format("page=%s&size=%s",
+                page, Constants.TERM_PAGE_SIZE);
 
         logger.debug(query);
 
-        return this.restTemplate.getForObject(query, TermQuery.class);
+        URI uri = encodeURL("/api/ontologies/" + ontologyID + "/terms", query);
+        return this.restTemplate.getForObject(uri, TermQuery.class);
     }
 
     /**
@@ -429,24 +473,31 @@ public class OLSClient implements Client {
         return terms;
     }
 
+
+    public List<Term> getTermsByName(String partialName, String ontologyID, boolean reverseKeyOrder) {
+        return getTermsByName(partialName, ontologyID, reverseKeyOrder, null);
+    }
+
+    public List<Term> getTermsByNameFromParent(String partialName, String ontologyID, boolean reverseKeyOrder, String childrenOf) {
+        return  getTermsByName(partialName, ontologyID, reverseKeyOrder, childrenOf);
+    }
+
     /**
      * This function retrieve all the terms from an specific ontology and perform a search in the client side.
-     * In the future would be great to repleace the current functionality with the search capabilities in the ols.
+     * In the future would be great to replace the current functionality with the search capabilities in the ols.
      *
      * @param partialName     Substring to lookup in the name term
-     * @param ontologyID
+     * @param ontologyID the ontology ID.
      * @param reverseKeyOrder sort the hash in a reverse order
-     * @return
+     * @return list of Terms.
      */
-    public List<Term> getTermsByName(String partialName, String ontologyID, boolean reverseKeyOrder) {
+
+    private List<Term> getTermsByName(String partialName, String ontologyID, boolean reverseKeyOrder, String childrenOf) {
         List<Term> resultTerms;
         if (partialName == null || partialName.isEmpty())
             return Collections.emptyList();
 
-        if (ontologyID == null || ontologyID.isEmpty())
-            resultTerms = searchByPartialTerm(partialName, null);
-        else
-            resultTerms = searchByPartialTerm(partialName, ontologyID);
+        resultTerms = searchByPartialTerm(partialName, ontologyID, childrenOf);
 
         if (reverseKeyOrder) {
             Set<Term> newMap = new TreeSet<Term>(Collections.reverseOrder());
@@ -457,74 +508,309 @@ public class OLSClient implements Client {
     }
 
     /**
-     * This function retrieve the term from an specific ontology and perform a search in the client side.
-     * In the future would be great to repleace the current functionality with the search capabilities in the ols.
+     * Searches for exact term matches that belong to a specific parent.
+     * You can restrict a search to children of a given term.
      *
-     * @param exactName     String to lookup in the name term
-     * @param ontologyId
-     * @return
+     * @param exactName the term we are looking for
+     * @param ontologyId the ontology that the term belongs to
+     * @param childrenOf a list of IRI for the terms that you want to search under, comma separated
+     * @return a list of Terms found
      */
-    public Term getExactTermByName(String exactName, String ontologyId) {
+    public List<Term> getExactTermsByNameFromParent(String exactName, String ontologyId, String childrenOf) {
+        return  getExactTermsByName(exactName, ontologyId, childrenOf);
+    }
+
+    public List<Term> getExactTermsByName(String exactName, String ontologyId) {
+        return getExactTermsByName(exactName, ontologyId, null);
+    }
+
+    public List<Term> getExactTermsByNameWithObsolete(String exactName, String ontologyId) {
+        return getExactTermsByNameWithObsolete(exactName, ontologyId, null);
+    }
+
+    private List<Term> getExactTermsByName(String exactName, String ontologyId, String childrenOf) {
+
+        if (exactName == null || exactName.isEmpty()){
+            return null;
+        }
+
+        return  searchByExactTerm(exactName, ontologyId, childrenOf);
+
+    }
+
+    private List<Term> getExactTermsByNameWithObsolete(String exactName, String ontologyId, String childrenOf) {
+
+
         if (exactName == null || exactName.isEmpty()){
             return null;
         }
         if (ontologyId == null || ontologyId.isEmpty()) {
-            return searchByExactTerm(exactName, null);
+            return searchByExactTermWithObsolete(exactName, null, childrenOf);
         }
         else {
-            return searchByExactTerm(exactName, ontologyId);
+            return  searchByExactTermWithObsolete(exactName, ontologyId, childrenOf);
         }
+
     }
 
-    private List<Term> searchByPartialTerm(String partialName, String ontology) throws RestClientException {
+
+    /**
+     * This function retrieve the term from an specific ontology and perform a search in the client side.
+     * In the future would be great to repleace the current functionality with the search capabilities in the ols.
+     *
+     * @param exactName     String to lookup in the name term
+     * @param ontologyId the ontology ID.
+     * @return the identified term
+     */
+    public Term getExactTermByName(String exactName, String ontologyId) {
+
+        List<Term> termResults;
+
+        if (exactName == null || exactName.isEmpty()){
+            return null;
+        }
+
+        termResults = searchByExactTerm(exactName, ontologyId, null);
+
+
+        if (termResults != null && !termResults.isEmpty()) {
+            return termResults.get(0);
+        }
+
+        return null;
+    }
+
+    public List<Term> getExactTermsByIriString(String iri) {
+        String customQueryField = new QueryFields.QueryFieldBuilder()
+                .setIri()
+                .build()
+                .toString();
+        this.setQueryField(customQueryField);
+        List<Term> terms = getExactTermsByName(iri, null);
+        //restore olsClient search to it's default query field and field list
+        this.setQueryField(DEFAULT_QUERY_FIELD);
+        return terms;
+    }
+
+    public List<Term> getExactTermsByIriStringWithObsolete(String iri) {
+        String customQueryField = new QueryFields.QueryFieldBuilder()
+                .setIri()
+                .build()
+                .toString();
+        this.setQueryField(customQueryField);
+        List<Term> terms = getExactTermsByNameWithObsolete(iri, null);
+        //restore olsClient search to it's default query field and field list
+        this.setQueryField(DEFAULT_QUERY_FIELD);
+        return terms;
+    } //getExactTermsByNameWithObsolete
+
+
+    private List<Term> searchByPartialTerm(String partialName, String ontology, String childrenOf) throws RestClientException {
+        return searchByTerm(partialName, ontology, false, childrenOf, false);
+    }
+
+    private List<Term> searchByExactTerm(String exactName, String ontologyId, String childrenOf) throws RestClientException {
+        return searchByTerm(exactName, ontologyId, true, childrenOf, false);
+    }
+
+    private List<Term> searchByExactTermWithObsolete(String exactName, String ontologyId, String childrenOf) throws RestClientException {
+        return searchByTerm(exactName, ontologyId, true, childrenOf, true);
+    }
+
+
+    /**
+     * Searches for terms in the OLS
+     *
+     * @param termToSearch the name of the term (partial or exact) that we want to find
+     * @param ontology  optional ontology to search the term in, null if not specified
+     * @param exact true if we want an exact string match
+     * @param childrenOf will restrict a search to children of a given term.
+     *                   Supply a list of IRI for the terms that you want to search under, comma separated
+     * @param obsolete  true if you want to look into obsolete terms
+     * @return a list of Terms found
+     * @throws RestClientException
+     */
+    private List<Term> searchByTerm(String termToSearch, String ontology, boolean exact, String childrenOf, boolean obsolete) throws RestClientException {
         List<Term> termResults = new ArrayList<Term>();
-        SearchQuery currentTermQuery = getSearchQuery(0, partialName, ontology, false);
+        SearchQuery currentTermQuery = getSearchQuery(0, termToSearch, ontology, exact, childrenOf, obsolete);
         List<SearchResult> terms = new ArrayList<SearchResult>();
         if (currentTermQuery != null && currentTermQuery.getResponse() != null && currentTermQuery.getResponse().getSearchResults() != null) {
             terms.addAll(Arrays.asList(currentTermQuery.getResponse().getSearchResults()));
             if (currentTermQuery.getResponse().getSearchResults().length < currentTermQuery.getResponse().getNumFound()) {
                 for (int i = 1; i < currentTermQuery.getResponse().getNumFound() / currentTermQuery.getResponse().getSearchResults().length + 1; i++) {
-                    SearchQuery termQuery = getSearchQuery(i, partialName, ontology, false);
+                    SearchQuery termQuery = getSearchQuery(i, termToSearch, ontology, exact, childrenOf, obsolete);
                     if (termQuery != null && termQuery.getResponse() != null && termQuery.getResponse().getSearchResults() != null)
                         terms.addAll(Arrays.asList(termQuery.getResponse().getSearchResults()));
                 }
             }
         }
         for (int i = 0; i < terms.size(); i++)
-            if (terms.get(i).getObo_id() != null && terms.get(i).getName() != null) {
+            if (terms.get(i).getName() != null) {
                 SearchResult termResult = terms.get(i);
-                termResults.add(new Term(termResult.getIri(), termResult.getName(), termResult.getDescription(), termResult.getShort_name(), termResult.getObo_id(), termResult.getOntology_name(), termResult.getOboDefinitionCitation()));
+                termResults.add(new Term(termResult.getIri(), termResult.getName(), termResult.getDescription(),
+                        termResult.getShortName(),
+                        termResult.getOboId(),
+                        termResult.getOntologyName(),
+                        termResult.getScore(),
+                        termResult.getOntologyIri(),
+                        termResult.getIsDefiningOntology(),
+                        termResult.getOboDefinitionCitation()));
             }
 
         return termResults;
     }
 
-    private Term searchByExactTerm(String exactName, String ontologyId) throws RestClientException {
-        SearchQuery currentTermQuery = getSearchQuery(0, exactName, ontologyId, true);
-        if (currentTermQuery.getResponse().getNumFound() != 0) {
-            SearchResult termResult = Arrays.asList(currentTermQuery.getResponse().getSearchResults()).get(0);
-            return new Term(termResult.getIri(), termResult.getName(), termResult.getDescription(), termResult.getShort_name(),
-                    termResult.getObo_id(), termResult.getOntology_name(), termResult.getOboDefinitionCitation());
+    /**
+     * Retrieves a specific term given its iri as a String and the ontology it belongs to
+     *
+     * @param id the term id, whether it is obo, shor or iri i.e. http://www.ebi.ac.uk/efo/EFO_0000635, EFO_0000635 or EFO:0000635
+     * @param ontology the ontology the term belongs to, i.e. efo
+     * @return the Term we are looking for. Can also be an ObsoleteTerm
+     * @throws RestClientException
+     */
+    public Term retrieveTerm(String id, String ontology) throws RestClientException {
+        RetrieveTermQuery currentTermQuery = getRetrieveQuery(id);
+
+        List<SearchResult> terms = new ArrayList<SearchResult>();
+        if (currentTermQuery != null && currentTermQuery.getResponse() != null && currentTermQuery.getResponse().getSearchResults() != null) {
+            terms.addAll(Arrays.asList(currentTermQuery.getResponse().getSearchResults()));
+        }
+        Term term = null;
+        for (int i = 0; i < terms.size(); i++)
+            if (terms.get(i).getName() != null) {
+                SearchResult termResult = terms.get(i);
+                if (termResult.isObsolete()){
+                    term = new ObsoleteTerm(termResult.getIri(), termResult.getName(), termResult.getDescription(),
+                            termResult.getShortName(),
+                            termResult.getOboId(),
+                            termResult.getOntologyName(),
+                            termResult.getScore(),
+                            termResult.getOntologyIri(),
+                            termResult.getIsDefiningOntology(),
+                            termResult.getOboDefinitionCitation(),
+                            termResult.getAnnotation(),
+                            true, termResult.getTermReplacedBy());
+                }
+                else {
+                    term = new Term(termResult.getIri(), termResult.getName(), termResult.getDescription(),
+                            termResult.getShortName(),
+                            termResult.getOboId(),
+                            termResult.getOntologyName(),
+                            termResult.getScore(),
+                            termResult.getOntologyIri(),
+                            termResult.getIsDefiningOntology(),
+                            termResult.getOboDefinitionCitation(),
+                            termResult.getAnnotation());
+                }
+            }
+
+            if(ontology != null && !ontology.isEmpty()){
+                if(!term.getOntologyName().toLowerCase().equals(ontology)){
+                    return null;
+                }
+            }
+        return term;
+    }
+
+    /**
+     * Check if an specific Term is obsolete in the OLS
+     *
+     * @param term the Term under inspection
+     * @return true if the term is annotated as obsolete
+     * @throws RestClientException if there are problems connecting to the REST service.
+     */
+    public boolean isObsolete(Term term) throws RestClientException{
+        if (term == null || term.getIri() == null){
+            return false;
+        }
+        Term obsoleteTerm = retrieveTerm(term.getIri().getIdentifier(), term.getOntologyName());
+        if (obsoleteTerm != null && obsoleteTerm instanceof ObsoleteTerm){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * If the given term is obsolete and has a reference to it's replacement
+     return the replacement
+
+     * @param termId the String of the id of the term we are looking for a replacement for
+     * @return the term to be replaced with, null if nothing found
+     */
+    public Term getReplacedBy(String termId){
+        if(isObsolete(termId)){
+            Term term = retrieveTerm(termId, null);
+            String termReplacedBy = ((ObsoleteTerm) term).getTermReplacedBy();
+            if(termReplacedBy == null || termReplacedBy.isEmpty()){
+                return null;
+            }
+            return retrieveTerm(termReplacedBy, null);
         }
         return null;
     }
 
+    private Term searchByExactTerm(String exactName, String ontologyId) throws RestClientException {
+        SearchQuery currentTermQuery = getSearchQuery(0, exactName, ontologyId, true, null, false);
+        if (currentTermQuery.getResponse().getNumFound() != 0) {
+            SearchResult termResult = Arrays.asList(currentTermQuery.getResponse().getSearchResults()).get(0);
+            return new Term(termResult.getIri(), termResult.getName(), termResult.getDescription(), termResult.getShortName(), termResult.getOboId(), termResult.getOntologyName(), termResult.getScore(), termResult.getOntologyIri(), termResult.getIsDefiningOntology(), termResult.getOboDefinitionCitation());
+        }
+        return null;
+    }
 
-    private SearchQuery getSearchQuery(int page, String name, String ontology, boolean exactMatch) throws RestClientException {
+    private SearchQuery getSearchQuery(int page, String name, String ontology, boolean exactMatch, String childrenOf, boolean obsolete) throws RestClientException {
         String query;
 
-        query = String.format("%s://%s/api/search?q=%s&queryFields=label,synonym&rows=%s&start=%s",
-                config.getProtocol(), config.getHostName(), name, Constants.SEARCH_PAGE_SIZE, page);
+        query = String.format("q=%s&" +
+                        this.getQueryField()
+                        + "&rows=%s&start=%s&"
+                        + this.getFieldList() ,
+                name, Constants.SEARCH_PAGE_SIZE, page);
 
         if (ontology != null && !ontology.isEmpty())
-            query = String.format("%s://%s/api/search?q=%s&queryFields=label,synonym&rows=%s&start=%s&ontology=%s",
-                    config.getProtocol(), config.getHostName(), name, Constants.SEARCH_PAGE_SIZE, page, ontology);
+            query += "&ontology=" + ontology;
 
         if(exactMatch){
             query += "&exact=true";
         }
+
+        if (childrenOf != null && !childrenOf.isEmpty())
+            query += "&childrenOf=" + childrenOf;
+
+        if (obsolete)
+            query += "&obsoletes=true";
+
         logger.debug(query);
-        return this.restTemplate.getForObject(query, SearchQuery.class);
+        URI uri = encodeURL("/api/search", query);
+        return this.restTemplate.getForObject(uri, SearchQuery.class);
+    }
+
+
+    private RetrieveTermQuery getRetrieveQuery(String id, String ontology) throws RestClientException {
+
+        if(ontology == null || ontology.isEmpty()){
+            throw new IllegalArgumentException("The term's ontology must not be null or empty!");
+        }
+        String query;
+
+        query = String.format("iri=%s",
+                        id);
+
+        logger.debug(query);
+        URI uri = encodeURL("/api/ontologies/" + ontology + "/terms", query);
+        return this.restTemplate.getForObject(uri, RetrieveTermQuery.class);
+    }
+
+    private RetrieveTermQuery getRetrieveQuery(String id) throws RestClientException {
+        String query;
+
+        query = String.format("id=%s",
+                        id);
+
+        logger.debug(query);
+        URI uri = encodeURL("/api/terms", query);
+        return this.restTemplate.getForObject(uri, RetrieveTermQuery.class);
     }
 
     private List<Term> getTermChildrenMap(Href childrenHRef, int distance) {
@@ -592,24 +878,20 @@ public class OLSClient implements Client {
     }
 
     /**
-     * This function return true if the term is obsolete, if the term is not found in the ontology the function
-     * return null, also if the value is not found.
-     *
-     * @param termOBOId  The OBOId of the Term in the ols ontology
+     * This method checks if a term is obsolete or not.
+     * @param termId  The Id of the Term in the ols ontology (short, obo, iri)
      * @param ontologyID the ontology ID
-     * @return
+     * @return true if the term is obsolete, if the term is not found in the ontology the function
+     * return null, also if the value is not found.
      */
-    public Boolean isObsolete(String termOBOId, String ontologyID) throws RestClientException {
-        String query = String.format("%s://%s/api/ontologies/%s/terms?obo_id=%s",
-                config.getProtocol(), config.getHostName(), ontologyID, termOBOId);
+    public Boolean isObsolete(String termId, String ontologyID) throws RestClientException {
+        Term term = retrieveTerm(termId, ontologyID);
+        return isObsolete(term);
+    }
 
-        logger.debug(query);
-        TermQuery termQuery = this.restTemplate.getForObject(query, TermQuery.class);
-        if (termQuery != null && termQuery.getTerms() != null && termQuery.getTerms().length == 1 &&
-                termQuery.getTerms()[0] != null)
-            return termQuery.getTerms()[0].isObsolete();
-
-        return null;
+    public Boolean isObsolete(String termId) throws RestClientException {
+        Term term = retrieveTerm(termId, null);
+        return isObsolete(term);
     }
 
     public List<Term> getTermsByAnnotationData(String ontologyID, String annotationType, String strValue) {
@@ -630,10 +912,8 @@ public class OLSClient implements Client {
     }
 
     public Ontology getOntology(String ontologyId) throws RestClientException {
-        String query = String.format("%s://%s/api/ontologies/%s",
-                config.getProtocol(), config.getHostName(), ontologyId);
-        logger.debug(query);
-        Ontology ontology = this.restTemplate.getForObject(query, Ontology.class);
+        URI uri = encodeURL("/api/ontologies/" + ontologyId, null);
+        Ontology ontology = this.restTemplate.getForObject(uri, Ontology.class);
         if (ontology != null) {
             return ontology;
         }
@@ -677,6 +957,13 @@ public class OLSClient implements Client {
         return null;
     }
 
+    /**
+     * This method gets the description of the first term identified by term ID and ontology ID.
+     * @param termId the term ID.
+     * @param ontologyId the ontology ID.
+     * @return the first term's description.
+     * @throws RestClientException if there are problems connecting to the REST service.
+     */
     public String getFirstTermDescription(Identifier termId, String ontologyId) throws RestClientException {
         Term term = getTermById(termId, ontologyId);
         String  description = null;
@@ -701,5 +988,17 @@ public class OLSClient implements Client {
             }
         }
         return xrefs;
+    }
+
+    private URI encodeURL(String path, String query){
+        URI uri = null;
+        try {
+            String hostname = config.getHostName().split("/")[0]; //e.g. www.ebi.ac.uk
+            String hostnamePath = config.getHostName().split("/")[1]; //e.g. ols
+            uri = new URI(config.getProtocol(), hostname, "/" + hostnamePath + path, query, null);
+            return uri;
+        } catch (URISyntaxException e){
+            throw new RestClientException("The query could not be encoded");
+        }
     }
 }

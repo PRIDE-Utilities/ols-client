@@ -4,21 +4,19 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * @author Yasset Perez-Riverol (ypriverol@gmail.com)
- * Creation date 03/03/2016
+ * Created by olgavrou on 10/11/2016.
  */
-
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SearchQuery {
+public class RetrieveTermQuery {
 
-    @JsonProperty("response")
-    SearchResponse response;
+    @JsonProperty("_embedded")
+    TermEmbeddedSearchResult response;
 
-    public SearchResponse getResponse() {
+    public TermEmbeddedSearchResult getResponse() {
         return response;
     }
 
-    public void setResponse(SearchResponse response) {
+    public void setResponse(TermEmbeddedSearchResult response) {
         this.response = response;
     }
 }

@@ -8,7 +8,7 @@ import java.util.Map;
 
 /**
  * @author Yasset Perez-Riverol (ypriverol@gmail.com)
- * @date 02/03/2016
+ * Creation date 02/03/2016
  */
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -136,9 +136,15 @@ public class Ontology {
             config.setName(name);
     }
 
-    public String getId(){
+    public String getNamespace(){
         if(config != null)
             return config.getNamespace();
+        return null;
+    }
+
+    public String getId(){
+        if(config != null)
+            return config.getId();
         return null;
     }
 

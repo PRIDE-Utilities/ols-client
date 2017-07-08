@@ -9,7 +9,7 @@ import java.util.Map;
 
 /**
  * @author Yasset Perez-Riverol (ypriverol@gmail.com)
- * @date 01/03/2016
+ * Creation date 01/03/2016
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Term implements Comparable{
@@ -32,14 +32,14 @@ public class Term implements Comparable{
     @JsonProperty("ontology_name")
     String ontologyName;
 
+    @JsonProperty("score")
+    String score;
+
     @JsonProperty("ontology_prefix")
     String ontologyPrefix;
 
     @JsonProperty("ontology_iri")
     String ontologyIri;
-
-    @JsonProperty("is_obsolete")
-    boolean obsolete;
 
     @JsonProperty("is_defining_ontology")
     boolean definedOntology;
@@ -72,14 +72,35 @@ public class Term implements Comparable{
     }
 
     public Term(Identifier iri, String label, String[] description,
-                Identifier shortForm, Identifier oboId, String ontologyName, OboDefinitionCitation[] oboDefinitionCitation) {
+                Identifier shortForm, Identifier oboId, String ontologyName, String score, String ontologyIri, boolean definedOntology, OboDefinitionCitation[] oboDefinitionCitation) {
         this.iri = iri;
         this.label = label;
         this.description = description;
         this.shortForm = shortForm;
         this.oboId = oboId;
         this.ontologyName = ontologyName;
+        this.score = score;
+        this.ontologyIri = ontologyIri;
+        this.definedOntology = definedOntology;
         this.oboDefinitionCitation = oboDefinitionCitation;
+    }
+
+    public Term(Identifier iri, String label, String[] description,
+                Identifier shortForm, Identifier oboId, String ontologyName, String score, String ontologyIri,
+                boolean definedOntology,
+                OboDefinitionCitation[] oboDefinitionCitation,
+                Annotation annotation) {
+        this.iri = iri;
+        this.label = label;
+        this.description = description;
+        this.shortForm = shortForm;
+        this.oboId = oboId;
+        this.ontologyName = ontologyName;
+        this.score = score;
+        this.ontologyIri = ontologyIri;
+        this.definedOntology = definedOntology;
+        this.oboDefinitionCitation = oboDefinitionCitation;
+        this.annotation = annotation;
     }
 
     public Identifier getIri() {
@@ -122,6 +143,10 @@ public class Term implements Comparable{
         this.ontologyName = ontologyName;
     }
 
+    public String getScore() { return  score; }
+
+    public void setScore(String score) { this.score = score; }
+
     public String getOntologyPrefix() {
         return ontologyPrefix;
     }
@@ -136,14 +161,6 @@ public class Term implements Comparable{
 
     public void setOntologyIri(String ontologyIri) {
         this.ontologyIri = ontologyIri;
-    }
-
-    public boolean isObsolete() {
-        return obsolete;
-    }
-
-    public void setObsolete(boolean obsolete) {
-        this.obsolete = obsolete;
     }
 
     public boolean isDefinedOntology() {
