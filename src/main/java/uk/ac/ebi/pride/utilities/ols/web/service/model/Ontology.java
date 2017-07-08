@@ -156,14 +156,14 @@ public class Ontology {
     }
 
     public Map<String, String> getAnnotations() {
-        Map<String, String> annotations = new HashMap<String, String>();
+        Map<String, String> annotations = new HashMap<>();
         if(config != null && config.getAnnotations() != null){
             for(String annotation: config.getAnnotations().annotation.keySet()){
-                String globalAnnotation = "";
+                StringBuilder globalAnnotation = new StringBuilder();
                 for(String subAnnotation: config.getAnnotations().getAnnotation().get(annotation)){
-                    globalAnnotation += subAnnotation + "\n";
+                    globalAnnotation.append(subAnnotation).append("\n");
                 }
-                annotations.put(annotation, globalAnnotation);
+                annotations.put(annotation, globalAnnotation.toString());
             }
         }
         return annotations;

@@ -64,21 +64,21 @@ public class QueryFields {
         StringBuilder queryFields = new StringBuilder("queryFields=");
 
         if (getIri() != null)
-            queryFields.append(getIri() + ",");
+            queryFields.append(getIri()).append(",");
         if (getLabel() != null)
-            queryFields.append(getLabel() + ",");
+            queryFields.append(getLabel()).append(",");
         if (getShortForm() != null)
-            queryFields.append(getShortForm() + ",");
+            queryFields.append(getShortForm()).append(",");
         if (getOboId() != null)
-            queryFields.append(getOboId() + ",");
+            queryFields.append(getOboId()).append(",");
         if (getDescription() != null)
-            queryFields.append(getDescription() + ",");
+            queryFields.append(getDescription()).append(",");
         if (getAnnotations() != null)
-            queryFields.append(getAnnotations() + ",");
+            queryFields.append(getAnnotations()).append(",");
         if (getSynonym() != null)
-            queryFields.append(getSynonym() + ",");
+            queryFields.append(getSynonym()).append(",");
         if (getLogicalDescription() != null)
-            queryFields.append(getLogicalDescription() + ",");
+            queryFields.append(getLogicalDescription()).append(",");
 
         return queryFields.toString();
     }

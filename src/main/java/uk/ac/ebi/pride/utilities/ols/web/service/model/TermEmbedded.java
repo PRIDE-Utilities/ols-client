@@ -2,7 +2,6 @@ package uk.ac.ebi.pride.utilities.ols.web.service.model;
 
 /**
  * @author Yasset Perez-Riverol (ypriverol@gmail.com)
- * Creation date 01/03/2016
  */
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

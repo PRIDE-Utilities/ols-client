@@ -1,7 +1,6 @@
 package uk.ac.ebi.pride.utilities.ols.web.service.client;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +14,6 @@ import static org.junit.Assert.*;
 
 /**
  * @author Yasset Perez-Riverol (ypriverol@gmail.com)
- * @date 01/03/2016
  */
 public class OLSClientTest {
 
