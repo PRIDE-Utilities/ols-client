@@ -668,7 +668,7 @@ public class OLSClient implements Client {
      * @throws RestClientException
      */
     public Term retrieveTerm(String id, String ontology) throws RestClientException {
-        RetrieveTermQuery currentTermQuery = getRetrieveQuery(id);
+        RetrieveTermQuery currentTermQuery = getRetrieveQuery(id, ontology);
 
         List<SearchResult> terms = new ArrayList<SearchResult>();
         if (currentTermQuery != null && currentTermQuery.getResponse() != null && currentTermQuery.getResponse().getSearchResults() != null) {
@@ -712,6 +712,44 @@ public class OLSClient implements Client {
     }
 
     /**
+     * Retrieves a specific term given its id as a String
+     * If it is obsolete then it will be an ObsoleteTerm
+     *
+     * @param id the term id, whether it is obo, shor or iri i.e. http://www.ebi.ac.uk/efo/EFO_0000635, EFO_0000635 or EFO:0000635
+     * @return the an ObsoleteTerm we are looking for or null if not obsolete
+     * @throws RestClientException
+     */
+    public ObsoleteTerm retrieveObsoleteTerm(String id) throws RestClientException {
+        RetrieveTermQuery currentTermQuery = getRetrieveQuery(id);
+
+        List<SearchResult> terms = new ArrayList<SearchResult>();
+        if (currentTermQuery != null && currentTermQuery.getResponse() != null && currentTermQuery.getResponse().getSearchResults() != null) {
+            terms.addAll(Arrays.asList(currentTermQuery.getResponse().getSearchResults()));
+        }
+        ObsoleteTerm term = null;
+        for (int i = 0; i < terms.size(); i++) {
+            if (terms.get(i).getName() != null) {
+                SearchResult termResult = terms.get(i);
+                if (termResult.isObsolete()) {
+                    if (termResult.getIsDefiningOntology()) {
+                        return new ObsoleteTerm(termResult.getIri(), termResult.getName(), termResult.getDescription(),
+                                termResult.getShortName(),
+                                termResult.getOboId(),
+                                termResult.getOntologyName(),
+                                termResult.getScore(),
+                                termResult.getOntologyIri(),
+                                termResult.getIsDefiningOntology(),
+                                termResult.getOboDefinitionCitation(),
+                                termResult.getAnnotation(),
+                                true, termResult.getTermReplacedBy());
+                    }
+                }
+            }
+        }
+        return term;
+    }
+
+    /**
      * Check if an specific Term is obsolete in the OLS
      *
      * @param term the Term under inspection
@@ -735,18 +773,38 @@ public class OLSClient implements Client {
      return the replacement
 
      * @param termId the String of the id of the term we are looking for a replacement for
+     * @param ontology the ontology the term belongs to
      * @return the term to be replaced with, null if nothing found
      */
-    public Term getReplacedBy(String termId){
-        if(isObsolete(termId)){
-            Term term = retrieveTerm(termId, null);
+    public Term getReplacedBy(String termId, String ontology){
+        if(isObsolete(termId, ontology)){
+            Term term = retrieveTerm(termId, ontology);
             String termReplacedBy = ((ObsoleteTerm) term).getTermReplacedBy();
             if(termReplacedBy == null || termReplacedBy.isEmpty()){
                 return null;
             }
-            return retrieveTerm(termReplacedBy, null);
+            return retrieveTerm(termReplacedBy, term.getOntologyName());
         }
         return null;
+    }
+
+    /**
+     * If the given term is obsolete and has a reference to it's replacement
+     return the replacement
+
+     * @param termId the String of the id of the term we are looking for a replacement for
+     * @return the term to be replaced with, null if nothing found
+     */
+    public Term getReplacedBy(String termId){
+        ObsoleteTerm term = retrieveObsoleteTerm(termId);
+        String termReplacedBy = null;
+        if(term != null) {
+            termReplacedBy = term.getTermReplacedBy();
+        }
+        if(termReplacedBy == null || termReplacedBy.isEmpty()){
+            return null;
+        }
+        return retrieveTerm(termReplacedBy.trim(), term.getOntologyName());
     }
 
     private Term searchByExactTerm(String exactName, String ontologyId) throws RestClientException {
@@ -791,10 +849,18 @@ public class OLSClient implements Client {
         if(ontology == null || ontology.isEmpty()){
             throw new IllegalArgumentException("The term's ontology must not be null or empty!");
         }
-        String query;
 
-        query = String.format("iri=%s",
-                        id);
+        String iri = null;
+        if(!id.contains("http") && !id.contains("/")){
+             iri = resolveIri(id);
+        }
+
+        if (iri == null){
+            iri = id;
+        }
+
+        String query = String.format("iri=%s",
+                iri);
 
         logger.debug(query);
         URI uri = encodeURL("/api/ontologies/" + ontology + "/terms", query);
@@ -805,12 +871,29 @@ public class OLSClient implements Client {
         String query;
 
         query = String.format("id=%s",
-                        id);
+                id);
 
         logger.debug(query);
         URI uri = encodeURL("/api/terms", query);
         return this.restTemplate.getForObject(uri, RetrieveTermQuery.class);
     }
+
+    private String resolveIri(String id) throws RestClientException {
+        RetrieveTermQuery currentTermQuery = getRetrieveQuery(id);
+        List<SearchResult> terms = new ArrayList<SearchResult>();
+        if (currentTermQuery != null && currentTermQuery.getResponse() != null && currentTermQuery.getResponse().getSearchResults() != null) {
+            terms.addAll(Arrays.asList(currentTermQuery.getResponse().getSearchResults()));
+        }
+
+        for (int i = 0; i < terms.size(); i++) {
+            if (terms.get(i).getName() != null) {
+                SearchResult termResult = terms.get(i);
+                return termResult.getIri().getIdentifier();
+            }
+        }
+        return null;
+    }
+
 
     private List<Term> getTermChildrenMap(Href childrenHRef, int distance) {
         List<Term> children = new ArrayList<Term>();
@@ -889,8 +972,12 @@ public class OLSClient implements Client {
     }
 
     public Boolean isObsolete(String termId) throws RestClientException {
-        Term term = retrieveTerm(termId, null);
-        return isObsolete(term);
+        ObsoleteTerm term = retrieveObsoleteTerm(termId);
+        if (term != null){
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public List<Term> getTermsByAnnotationData(String ontologyID, String annotationType, String strValue) {
