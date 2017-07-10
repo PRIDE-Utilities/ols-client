@@ -12,7 +12,7 @@ import java.util.Map;
  * Creation date 01/03/2016
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Term implements Comparable{
+public class Term implements Comparable, ITerm {
 
     @JsonProperty("iri")
     Identifier iri;
@@ -259,6 +259,10 @@ public class Term implements Comparable{
         return null;
     }
 
+    /**
+     * Get all synonyms for an specific ontology.
+     * @return Map of Synonyms.
+     */
     public Map<String, String> getOboSynonyms(){
         Map<String, String> synonyms = new HashMap<>();
         if(oboSynonyms != null){
@@ -294,5 +298,20 @@ public class Term implements Comparable{
                 ", shortForm=" + shortForm +
                 ", description=" + Arrays.toString(description) +
                 '}';
+    }
+
+    @Override
+    public String getName() {
+        return getLabel();
+    }
+
+    @Override
+    public Identifier getShortName() {
+        return shortForm;
+    }
+
+    @Override
+    public Identifier getOboId() {
+        return oboId;
     }
 }

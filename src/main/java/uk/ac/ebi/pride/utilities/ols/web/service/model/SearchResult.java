@@ -4,11 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
+ * SearchResult contains summary term information after the query to the ols service.
+ *
  * @author Yasset Perez-Riverol (ypriverol@gmail.com)
- * Creation date 03/03/2016
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SearchResult {
+public class SearchResult implements ITerm {
 
     @JsonProperty("id")
     String id;
@@ -163,5 +164,9 @@ public class SearchResult {
 
     public void setOboDefinitionCitation(OboDefinitionCitation[] oboDefinitionCitation) {
         this.oboDefinitionCitation = oboDefinitionCitation;
+    }
+
+    public Identifier getGlobalId(){
+        return (oboId != null)?oboId:shortName;
     }
 }

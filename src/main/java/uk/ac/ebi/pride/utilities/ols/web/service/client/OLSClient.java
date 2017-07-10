@@ -18,6 +18,9 @@ import java.util.*;
 
 
 /**
+ * This class allows to query the Ontology Lockup service to retrirve information about
+ * CVTerms.
+ *
  * @author ypriverol
  */
 public class OLSClient implements Client {
@@ -478,6 +481,10 @@ public class OLSClient implements Client {
         return getTermsByName(partialName, ontologyID, reverseKeyOrder, null);
     }
 
+    public List<Term> getTermsByName(String partialName, String ontologyID, boolean reverseKeyOrder, int page) {
+        return getTermsByName(partialName, ontologyID, reverseKeyOrder, null);
+    }
+
     public List<Term> getTermsByNameFromParent(String partialName, String ontologyID, boolean reverseKeyOrder, String childrenOf) {
         return  getTermsByName(partialName, ontologyID, reverseKeyOrder, childrenOf);
     }
@@ -632,13 +639,13 @@ public class OLSClient implements Client {
      */
     private List<Term> searchByTerm(String termToSearch, String ontology, boolean exact, String childrenOf, boolean obsolete) throws RestClientException {
         List<Term> termResults = new ArrayList<>();
-        SearchQuery currentTermQuery = getSearchQuery(0, termToSearch, ontology, exact, childrenOf, obsolete);
+        SearchQuery currentTermQuery = getSearchQuery(0, termToSearch, ontology, exact, childrenOf, obsolete, Constants.SEARCH_PAGE_SIZE);
         List<SearchResult> terms = new ArrayList<>();
         if (currentTermQuery != null && currentTermQuery.getResponse() != null && currentTermQuery.getResponse().getSearchResults() != null) {
             terms.addAll(Arrays.asList(currentTermQuery.getResponse().getSearchResults()));
             if (currentTermQuery.getResponse().getSearchResults().length < currentTermQuery.getResponse().getNumFound()) {
                 for (int i = 1; i < currentTermQuery.getResponse().getNumFound() / currentTermQuery.getResponse().getSearchResults().length + 1; i++) {
-                    SearchQuery termQuery = getSearchQuery(i, termToSearch, ontology, exact, childrenOf, obsolete);
+                    SearchQuery termQuery = getSearchQuery(i, termToSearch, ontology, exact, childrenOf, obsolete, Constants.SEARCH_PAGE_SIZE);
                     if (termQuery != null && termQuery.getResponse() != null && termQuery.getResponse().getSearchResults() != null)
                         terms.addAll(Arrays.asList(termQuery.getResponse().getSearchResults()));
                 }
@@ -662,7 +669,7 @@ public class OLSClient implements Client {
     /**
      * Retrieves a specific term given its iri as a String and the ontology it belongs to
      *
-     * @param id the term id, whether it is obo, shor or iri i.e. http://www.ebi.ac.uk/efo/EFO_0000635, EFO_0000635 or EFO:0000635
+     * @param id the term id, whether it is obo, short or iri i.e. http://www.ebi.ac.uk/efo/EFO_0000635, EFO_0000635 or EFO:0000635
      * @param ontology the ontology the term belongs to, i.e. efo
      * @return the Term we are looking for. Can also be an ObsoleteTerm
      * @throws RestClientException Rest Exception
@@ -801,7 +808,7 @@ public class OLSClient implements Client {
     }
 
     private Term searchByExactTerm(String exactName, String ontologyId) throws RestClientException {
-        SearchQuery currentTermQuery = getSearchQuery(0, exactName, ontologyId, true, null, false);
+        SearchQuery currentTermQuery = getSearchQuery(0, exactName, ontologyId, true, null, false, Constants.SEARCH_PAGE_SIZE);
         if (currentTermQuery.getResponse().getNumFound() != 0) {
             SearchResult termResult = Arrays.asList(currentTermQuery.getResponse().getSearchResults()).get(0);
             return new Term(termResult.getIri(), termResult.getName(), termResult.getDescription(), termResult.getShortName(), termResult.getOboId(), termResult.getOntologyName(), termResult.getScore(), termResult.getOntologyIri(), termResult.getIsDefiningOntology(), termResult.getOboDefinitionCitation());
@@ -809,14 +816,26 @@ public class OLSClient implements Client {
         return null;
     }
 
-    private SearchQuery getSearchQuery(int page, String name, String ontology, boolean exactMatch, String childrenOf, boolean obsolete) throws RestClientException {
+    /**
+     * Raw query to OLS Service
+     * @param page number of the page
+     * @param name term to be query
+     * @param ontology ontology name
+     * @param exactMatch if is exact match
+     * @param childrenOf including children
+     * @param obsolete including obsolete terms
+     * @param size size of the query
+     * @return Return results
+     * @throws RestClientException
+     */
+    public SearchQuery getSearchQuery(int page, String name, String ontology, boolean exactMatch, String childrenOf, boolean obsolete, int size) throws RestClientException {
         String query;
 
         query = String.format("q=%s&" +
                         this.getQueryField()
                         + "&rows=%s&start=%s&"
                         + this.getFieldList() ,
-                name, Constants.SEARCH_PAGE_SIZE, page);
+                name, size, page);
 
         if (ontology != null && !ontology.isEmpty())
             query += "&ontology=" + ontology;
