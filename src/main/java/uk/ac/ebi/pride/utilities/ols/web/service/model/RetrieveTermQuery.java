@@ -4,13 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Created by olgavrou on 10/11/2016.
+ * @author olgavrou
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RetrieveTermQuery {
 
     @JsonProperty("_embedded")
-    TermEmbeddedSearchResult response;
+    private TermEmbeddedSearchResult response;
 
     public TermEmbeddedSearchResult getResponse() {
         return response;

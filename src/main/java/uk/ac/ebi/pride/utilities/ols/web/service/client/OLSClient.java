@@ -2,6 +2,8 @@ package uk.ac.ebi.pride.utilities.ols.web.service.client;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
@@ -30,6 +32,8 @@ public class OLSClient implements Client {
 
     private String queryField;
     private String fieldList;
+
+    private static int TIME_OUT = 5000;
 
     public static final String DEFAULT_QUERY_FIELD = new QueryFields.QueryFieldBuilder()
             .setLabel()
@@ -83,7 +87,13 @@ public class OLSClient implements Client {
      */
     public OLSClient(AbstractOLSWsConfig config) {
         this.config = config;
-        this.restTemplate = new RestTemplate();
+        this.restTemplate = new RestTemplate(getClientHttpRequestFactory());
+    }
+
+    private ClientHttpRequestFactory getClientHttpRequestFactory() {
+        HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory();
+        clientHttpRequestFactory.setConnectTimeout(TIME_OUT);
+        return clientHttpRequestFactory;
     }
 
 
@@ -826,7 +836,7 @@ public class OLSClient implements Client {
      * @param obsolete including obsolete terms
      * @param size size of the query
      * @return Return results
-     * @throws RestClientException
+     * @throws RestClientException RestClient Exception
      */
     public SearchQuery getSearchQuery(int page, String name, String ontology, boolean exactMatch, String childrenOf, boolean obsolete, int size) throws RestClientException {
         String query;
@@ -984,11 +994,7 @@ public class OLSClient implements Client {
 
     public Boolean isObsolete(String termId) throws RestClientException {
         ObsoleteTerm term = retrieveObsoleteTerm(termId);
-        if (term != null){
-            return true;
-        } else {
-            return false;
-        }
+        return term != null;
     }
 
     public List<Term> getTermsByAnnotationData(String ontologyID, String annotationType, String strValue) {

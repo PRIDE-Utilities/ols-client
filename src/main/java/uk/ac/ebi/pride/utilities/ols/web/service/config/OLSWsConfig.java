@@ -3,7 +3,7 @@ package uk.ac.ebi.pride.utilities.ols.web.service.config;
 import uk.ac.ebi.pride.utilities.ols.web.service.utils.Constants;
 
 /**
- * Created by olgavrou on 05/12/2016.
+ * @author olgavrou
  */
 public class OLSWsConfig extends AbstractOLSWsConfig {
 

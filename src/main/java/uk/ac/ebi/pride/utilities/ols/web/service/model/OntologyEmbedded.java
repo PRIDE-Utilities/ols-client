@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class OntologyEmbedded {
 
     @JsonProperty("ontologies")
-    Ontology[] ontologies;
+    private Ontology[] ontologies;
 
     public Ontology[] getTerms() {
         return ontologies;

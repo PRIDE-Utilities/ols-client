@@ -15,34 +15,34 @@ import java.util.Map;
 public class Ontology {
 
     @JsonProperty("loaded")
-    String loadedDate;
+    private String loadedDate;
 
     @JsonProperty("updated")
-    String updatedDate;
+    private String updatedDate;
 
     @JsonProperty("status")
-    String status;
+    private String status;
 
     @JsonProperty("message")
-    String message;
+    private String message;
 
     @JsonProperty("version")
-    String version;
+    private String version;
 
     @JsonProperty("numberOfTerms")
-    int numberOfTerms;
+    private int numberOfTerms;
 
     @JsonProperty("numberOfProperties")
-    int numberOfProperties;
+    private int numberOfProperties;
 
     @JsonProperty("numberOfIndividuals")
-    int numberOfIndividuals;
+    private int numberOfIndividuals;
 
     @JsonProperty("config")
-    Config config;
+    private Config config;
 
     @JsonProperty("_links")
-    Link link;
+    private Link link;
 
 
     public String getLoadedDate() {

@@ -15,58 +15,59 @@ import java.util.Map;
 public class Term implements Comparable, ITerm {
 
     @JsonProperty("iri")
-    Identifier iri;
+    private Identifier iri;
 
     @JsonProperty("label")
-    String label;
+    private String label;
 
     @JsonProperty("description")
-    String[] description;
+    private String[] description;
 
     @JsonProperty("annotation")
-    Annotation annotation;
+    private Annotation annotation;
 
     @JsonProperty("synonyms")
-    String[] synonyms;
+    private String[] synonyms;
 
     @JsonProperty("ontology_name")
-    String ontologyName;
+    private String ontologyName;
 
     @JsonProperty("score")
-    String score;
+    private String score;
 
     @JsonProperty("ontology_prefix")
-    String ontologyPrefix;
+    private String ontologyPrefix;
 
     @JsonProperty("ontology_iri")
-    String ontologyIri;
+    private String ontologyIri;
 
     @JsonProperty("is_defining_ontology")
-    boolean definedOntology;
+    private boolean definedOntology;
 
     @JsonProperty("has_children")
-    boolean hasChildren;
+    private boolean hasChildren;
 
     @JsonProperty("is_root")
-    boolean root;
+    private boolean root;
 
     @JsonProperty("short_form")
+    private
     Identifier shortForm;
 
     @JsonProperty("obo_id")
-    Identifier oboId;
+    private Identifier oboId;
 
     @JsonProperty("obo_definition_citation")
-    OboDefinitionCitation[] oboDefinitionCitation;
+    private OboDefinitionCitation[] oboDefinitionCitation;
 
     @JsonProperty("_links")
-    Link link;
+    private Link link;
 
     @JsonProperty("obo_xref")
-    OBOXRef[] oboXRefs;
+    private OBOXRef[] oboXRefs;
 
     @JsonProperty("obo_synonym")
-    OBOSynonym[] oboSynonyms;
+    private OBOSynonym[] oboSynonyms;
 
     public Term() {
     }

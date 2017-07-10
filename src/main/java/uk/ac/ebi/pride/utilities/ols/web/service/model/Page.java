@@ -9,16 +9,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Page {
 
     @JsonProperty("size")
-    int size;
+    private int size;
 
     @JsonProperty("totalElements")
-    int totalElements;
+    private int totalElements;
 
     @JsonProperty("totalPages")
-    int totalPages;
+    private int totalPages;
 
     @JsonProperty("number")
-    int number;
+    private int number;
 
     public int getSize() {
         return size;

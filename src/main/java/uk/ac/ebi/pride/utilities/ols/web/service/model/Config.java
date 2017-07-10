@@ -13,69 +13,79 @@ import java.util.Arrays;
 public class Config {
 
     @JsonProperty("id")
-    String id;
+    private String id;
 
     @JsonProperty("versionIri")
-    String versionIri;
+    private String versionIri;
 
     @JsonProperty("title")
-    String name;
+    private String name;
 
     @JsonProperty("namespace")
-    String namespace;
+    private String namespace;
 
     @JsonProperty("preferredPrefix")
-    String preferredPrefix;
+    private String preferredPrefix;
 
     @JsonProperty("description")
-    String description;
+    private String description;
 
     @JsonProperty("homepage")
-    String homePage;
+    private String homePage;
 
     @JsonProperty("version")
-    String version;
+    private String version;
 
     @JsonProperty("mailingList")
-    String mailingList;
+    private String mailingList;
 
     @JsonProperty("creators")
-    String[] creators;
+    private String[] creators;
 
     @JsonProperty("annotations")
-    Annotation annotations;
+    private Annotation annotations;
 
     @JsonProperty("fileLocation")
-    String fileLocation;
+    private String fileLocation;
 
     @JsonProperty("reasonerType")
+    private
     String reasonerType;
 
     @JsonProperty("oboSlims")
+    private
     boolean oboLims;
 
     @JsonProperty("labelProperty")
+    private
     String labelProperty;
 
     @JsonProperty("definitionProperties")
+    private
     String[] definitionProperties;
 
     @JsonProperty("synonymProperties")
+    private
     String[] synonymProperties;
 
     @JsonProperty("hierarchicalProperties")
+    private
     String[] hierarchicalProperties;
 
     @JsonProperty("baseUris")
+    private
     String[] baseUris;
 
     @JsonProperty("hiddenProperties")
+    private
     String[] hiddenProperties;
 
     @JsonProperty("internalMetadataProperties")
+    private
     String[] internalMetadataProperties;
 
     @JsonProperty("skos")
+    private
     boolean skos;
 
     public boolean isSkos() {

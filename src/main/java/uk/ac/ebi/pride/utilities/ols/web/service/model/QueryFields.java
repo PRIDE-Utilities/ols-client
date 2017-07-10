@@ -1,7 +1,7 @@
 package uk.ac.ebi.pride.utilities.ols.web.service.model;
 
 /**
- * Created by olgavrou on 25/05/2016.
+ * @author olgavrou
  */
 public class QueryFields {
 
