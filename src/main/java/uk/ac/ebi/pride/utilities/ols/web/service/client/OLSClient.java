@@ -27,20 +27,20 @@ import java.util.*;
  */
 public class OLSClient implements Client {
 
-    protected RestTemplate restTemplate;
-    protected AbstractOLSWsConfig config;
+    private  RestTemplate restTemplate;
+    private  AbstractOLSWsConfig config;
 
     private String queryField;
     private String fieldList;
 
     private static int TIME_OUT = 5000;
 
-    public static final String DEFAULT_QUERY_FIELD = new QueryFields.QueryFieldBuilder()
+    private static final String DEFAULT_QUERY_FIELD = new QueryFields.QueryFieldBuilder()
             .setLabel()
             .setSynonym()
             .build()
             .toString();
-    public static final String DEFAULT_FIELD_LIST = new FieldList.FieldListBuilder()
+    private static final String DEFAULT_FIELD_LIST = new FieldList.FieldListBuilder()
             .setLabel()
             .setIri()
             .setScore()

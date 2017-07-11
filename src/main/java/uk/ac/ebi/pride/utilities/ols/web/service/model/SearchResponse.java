@@ -12,13 +12,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class SearchResponse {
 
     @JsonProperty("numFound")
-    int numFound;
+    private int numFound;
 
     @JsonProperty("start")
-    int currentPage;
+    private int currentPage;
 
     @JsonProperty("docs")
-    SearchResult[] searchResults;
+    private SearchResult[] searchResults;
 
     public int getNumFound() {
         return numFound;

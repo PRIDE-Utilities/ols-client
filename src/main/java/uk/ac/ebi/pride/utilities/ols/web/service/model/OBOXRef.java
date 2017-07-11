@@ -11,13 +11,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class OBOXRef {
 
     @JsonProperty("database")
-    String database;
+    private String database;
 
     @JsonProperty("id")
-    String id;
+    private String id;
 
     @JsonProperty("description")
-    String description;
+    private String description;
 
     public OBOXRef() {
     }

@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Href {
 
     @JsonProperty("href")
-    String href;
+    private String href;
 
     public String getHref() {
         return href;

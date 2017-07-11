@@ -61,21 +61,21 @@ public class OLSClientTest {
     @Test
     public void testGetTermChildrenByOBOId() throws Exception {
         List<Term> children = olsClient.getTermChildren(new Identifier("MS_1001143", Identifier.IdentifierType.OWL), "ms", 1);
-        logger.info(children.toString());
+        logger.debug(children.toString());
         Assert.assertTrue(contains(children, new Identifier("MS_1001568", Identifier.IdentifierType.OWL)));
     }
 
     @Test
     public void testGetTermChildrenByShortFormId() throws Exception {
         List<Term> children = olsClient.getTermChildren(new Identifier("MS_1001143", Identifier.IdentifierType.OWL), "ms", 1);
-        logger.info(children.toString());
+        logger.debug(children.toString());
         Assert.assertTrue(contains(children, new Identifier("MS:1001568", Identifier.IdentifierType.OBO)));
     }
 
     @Test
     public void testGetTermChildrenByIrIId() throws Exception {
         List<Term> children = olsClient.getTermChildren(new Identifier("http://purl.obolibrary.org/obo/MS_1001143", Identifier.IdentifierType.IRI), "ms", 1);
-        logger.info(children.toString());
+        logger.debug(children.toString());
         Assert.assertTrue(contains(children, new Identifier("http://purl.obolibrary.org/obo/MS_1001568", Identifier.IdentifierType.IRI)));
     }
 
@@ -105,21 +105,21 @@ public class OLSClientTest {
     @Test
     public void testGetTermParentsByOBOId() throws Exception {
         List<Term> parents = olsClient.getTermParents(new Identifier("GO:0000990", Identifier.IdentifierType.OBO), "GO", 1);
-        logger.info(parents.toString());
+        logger.debug(parents.toString());
         Assert.assertTrue(contains(parents, new Identifier("GO:0000988", Identifier.IdentifierType.OBO)));
     }
 
     @Test
     public void testGetTermParentsByShortForm() throws Exception {
         List<Term> parents = olsClient.getTermParents(new Identifier("GO_0000990", Identifier.IdentifierType.OWL), "GO", 1);
-        logger.info(parents.toString());
+        logger.debug(parents.toString());
         Assert.assertTrue(contains(parents, new Identifier("GO_0000988", Identifier.IdentifierType.OWL)));
     }
 
     @Test
     public void testGetTermParentsByIrIId() throws Exception {
         List<Term> parents = olsClient.getTermParents(new Identifier("http://purl.obolibrary.org/obo/GO_0000990", Identifier.IdentifierType.IRI), "GO", 1);
-        logger.info(parents.toString());
+        logger.debug(parents.toString());
         Assert.assertTrue(contains(parents, new Identifier("http://purl.obolibrary.org/obo/GO_0000988", Identifier.IdentifierType.IRI)));
     }
 

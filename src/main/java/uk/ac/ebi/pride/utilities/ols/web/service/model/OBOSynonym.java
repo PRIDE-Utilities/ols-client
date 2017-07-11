@@ -11,16 +11,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class OBOSynonym {
 
     @JsonProperty("name")
-    String name;
+    private String name;
 
     @JsonProperty("scope")
-    String scope;
+    private String scope;
 
     @JsonProperty("type")
-    String type;
+    private String type;
 
     @JsonProperty("xrefs")
-    Xref[] xrefs;
+    private Xref[] xrefs;
 
     public String getName() {
         return name;

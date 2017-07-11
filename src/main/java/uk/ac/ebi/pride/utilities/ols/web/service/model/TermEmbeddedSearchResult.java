@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class TermEmbeddedSearchResult{
 
     @JsonProperty("terms")
-    SearchResult[] searchResults;
+    private SearchResult[] searchResults;
 
     public SearchResult[] getSearchResults() {
         return searchResults;
