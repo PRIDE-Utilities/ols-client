@@ -53,8 +53,8 @@
     </developers>
 
     <properties>
-        <uk.ac.ebi.pride.architectural.pride-logging.version>1.0.0</uk.ac.ebi.pride.architectural.pride-logging.version>
-        <uk.ac.ebi.pride.architectural.pride-tdd.version>1.0.3</uk.ac.ebi.pride.architectural.pride-tdd.version>
+        <uk.ac.ebi.pride.architectural-pride-logging.version>1.0.0</uk.ac.ebi.pride.architectural-pride-logging.version>
+        <uk.ac.ebi.pride.architectural-pride-tdd.version>1.0.3</uk.ac.ebi.pride.architectural-pride-tdd.version>
         <github.global.server>github</github.global.server>
     </properties>
 
@@ -96,14 +96,14 @@
         <dependency>
             <groupId>uk.ac.ebi.pride.architectural</groupId>
             <artifactId>pride-logging</artifactId>
-            <version>${uk.ac.ebi.pride.architectural.pride-logging.version}</version>
+            <version>${uk.ac.ebi.pride.architectural-pride-logging.version}</version>
             <type>pom</type>
         </dependency>
         <!-- TDD -->
         <dependency>
             <groupId>uk.ac.ebi.pride.architectural</groupId>
             <artifactId>pride-tdd</artifactId>
-            <version>${uk.ac.ebi.pride.architectural.pride-tdd.version}</version>
+            <version>${uk.ac.ebi.pride.architectural-pride-tdd.version}</version>
             <type>pom</type>
             <scope>test</scope>
         </dependency>
