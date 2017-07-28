@@ -15,34 +15,34 @@ import java.util.Map;
 public class Ontology {
 
     @JsonProperty("loaded")
-    String loadedDate;
+    private String loadedDate;
 
     @JsonProperty("updated")
-    String updatedDate;
+    private String updatedDate;
 
     @JsonProperty("status")
-    String status;
+    private String status;
 
     @JsonProperty("message")
-    String message;
+    private String message;
 
     @JsonProperty("version")
-    String version;
+    private String version;
 
     @JsonProperty("numberOfTerms")
-    int numberOfTerms;
+    private int numberOfTerms;
 
     @JsonProperty("numberOfProperties")
-    int numberOfProperties;
+    private int numberOfProperties;
 
     @JsonProperty("numberOfIndividuals")
-    int numberOfIndividuals;
+    private int numberOfIndividuals;
 
     @JsonProperty("config")
-    Config config;
+    private Config config;
 
     @JsonProperty("_links")
-    Link link;
+    private Link link;
 
 
     public String getLoadedDate() {
@@ -156,16 +156,32 @@ public class Ontology {
     }
 
     public Map<String, String> getAnnotations() {
-        Map<String, String> annotations = new HashMap<String, String>();
+        Map<String, String> annotations = new HashMap<>();
         if(config != null && config.getAnnotations() != null){
             for(String annotation: config.getAnnotations().annotation.keySet()){
-                String globalAnnotation = "";
+                StringBuilder globalAnnotation = new StringBuilder();
                 for(String subAnnotation: config.getAnnotations().getAnnotation().get(annotation)){
-                    globalAnnotation += subAnnotation + "\n";
+                    globalAnnotation.append(subAnnotation).append("\n");
                 }
-                annotations.put(annotation, globalAnnotation);
+                annotations.put(annotation, globalAnnotation.toString());
             }
         }
         return annotations;
+    }
+
+    @Override
+    public String toString() {
+        return "Ontology{" +
+                "loadedDate='" + loadedDate + '\'' +
+                ", updatedDate='" + updatedDate + '\'' +
+                ", status='" + status + '\'' +
+                ", message='" + message + '\'' +
+                ", version='" + version + '\'' +
+                ", numberOfTerms=" + numberOfTerms +
+                ", numberOfProperties=" + numberOfProperties +
+                ", numberOfIndividuals=" + numberOfIndividuals +
+                ", config=" + config +
+                ", link=" + link +
+                '}';
     }
 }

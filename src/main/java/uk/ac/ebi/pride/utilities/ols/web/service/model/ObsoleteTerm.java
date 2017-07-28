@@ -4,16 +4,16 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Created by olgavrou on 10/11/2016.
+ * @author olgavrou
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ObsoleteTerm extends Term {
 
     @JsonProperty("is_obsolete")
-    boolean obsolete;
+    private boolean obsolete;
 
     @JsonProperty("term_replaced_by")
-    String termReplacedBy;
+    private String termReplacedBy;
 
     public ObsoleteTerm(Identifier iri, String label, String[] description,
                 Identifier shortForm, Identifier oboId, String ontologyName, String score, String ontologyIri,

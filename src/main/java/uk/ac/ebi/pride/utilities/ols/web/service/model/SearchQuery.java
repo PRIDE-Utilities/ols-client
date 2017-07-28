@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class SearchQuery {
 
     @JsonProperty("response")
-    SearchResponse response;
+    private SearchResponse response;
 
     public SearchResponse getResponse() {
         return response;

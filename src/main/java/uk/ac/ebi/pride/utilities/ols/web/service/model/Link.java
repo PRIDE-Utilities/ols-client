@@ -52,7 +52,7 @@ public class Link {
         }
     }
 
-    public Map<String, Href> links = new HashMap<String, Href>();
+    private Map<String, Href> links = new HashMap<>();
 
     @JsonAnyGetter
     public Map<String, Href> any() {

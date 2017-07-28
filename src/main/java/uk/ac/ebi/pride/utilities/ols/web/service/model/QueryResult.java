@@ -12,10 +12,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public abstract class QueryResult {
 
     @JsonProperty("_links")
-    Link link;
+    private Link link;
 
     @JsonProperty("page")
-    Page page;
+    private Page page;
 
     public Link getLink() {
         return link;

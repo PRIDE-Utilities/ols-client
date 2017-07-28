@@ -3,6 +3,7 @@ package uk.ac.ebi.pride.utilities.ols.web.service.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,61 +12,62 @@ import java.util.Map;
  * Creation date 01/03/2016
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Term implements Comparable{
+public class Term implements Comparable, ITerm {
 
     @JsonProperty("iri")
-    Identifier iri;
+    private Identifier iri;
 
     @JsonProperty("label")
-    String label;
+    private String label;
 
     @JsonProperty("description")
-    String[] description;
+    private String[] description;
 
     @JsonProperty("annotation")
-    Annotation annotation;
+    private Annotation annotation;
 
     @JsonProperty("synonyms")
-    String[] synonyms;
+    private String[] synonyms;
 
     @JsonProperty("ontology_name")
-    String ontologyName;
+    private String ontologyName;
 
     @JsonProperty("score")
-    String score;
+    private String score;
 
     @JsonProperty("ontology_prefix")
-    String ontologyPrefix;
+    private String ontologyPrefix;
 
     @JsonProperty("ontology_iri")
-    String ontologyIri;
+    private String ontologyIri;
 
     @JsonProperty("is_defining_ontology")
-    boolean definedOntology;
+    private boolean definedOntology;
 
     @JsonProperty("has_children")
-    boolean hasChildren;
+    private boolean hasChildren;
 
     @JsonProperty("is_root")
-    boolean root;
+    private boolean root;
 
     @JsonProperty("short_form")
+    private
     Identifier shortForm;
 
     @JsonProperty("obo_id")
-    Identifier oboId;
+    private Identifier oboId;
 
     @JsonProperty("obo_definition_citation")
-    OboDefinitionCitation[] oboDefinitionCitation;
+    private OboDefinitionCitation[] oboDefinitionCitation;
 
     @JsonProperty("_links")
-    Link link;
+    private Link link;
 
     @JsonProperty("obo_xref")
-    OBOXRef[] oboXRefs;
+    private OBOXRef[] oboXRefs;
 
     @JsonProperty("obo_synonym")
-    OBOSynonym[] oboSynonyms;
+    private OBOSynonym[] oboSynonyms;
 
     public Term() {
     }
@@ -258,6 +260,10 @@ public class Term implements Comparable{
         return null;
     }
 
+    /**
+     * Get all synonyms for an specific ontology.
+     * @return Map of Synonyms.
+     */
     public Map<String, String> getOboSynonyms(){
         Map<String, String> synonyms = new HashMap<>();
         if(oboSynonyms != null){
@@ -284,5 +290,29 @@ public class Term implements Comparable{
 
     }
 
+    @Override
+    public String toString() {
+        return "Term{" +
+                "iri=" + iri +
+                ", label='" + label + '\'' +
+                ", oboId=" + oboId +
+                ", shortForm=" + shortForm +
+                ", description=" + Arrays.toString(description) +
+                '}';
+    }
 
+    @Override
+    public String getName() {
+        return getLabel();
+    }
+
+    @Override
+    public Identifier getShortName() {
+        return shortForm;
+    }
+
+    @Override
+    public Identifier getOboId() {
+        return oboId;
+    }
 }

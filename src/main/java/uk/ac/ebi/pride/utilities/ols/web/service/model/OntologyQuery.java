@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class OntologyQuery extends QueryResult{
 
     @JsonProperty("_embedded")
-    OntologyEmbedded ontologyEmbedded;
+    private OntologyEmbedded ontologyEmbedded;
 
     public Ontology[] getOntolgoies() {
         if(ontologyEmbedded != null)

@@ -4,54 +4,54 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
+ * SearchResult contains summary term information after the query to the ols service.
+ *
  * @author Yasset Perez-Riverol (ypriverol@gmail.com)
- * Creation date 03/03/2016
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SearchResult {
+public class SearchResult implements ITerm {
 
     @JsonProperty("id")
-    String id;
+    private String id;
 
     @JsonProperty("iri")
-    Identifier iri;
+    private Identifier iri;
 
     @JsonProperty("short_form")
-    Identifier shortName;
+    private Identifier shortName;
 
     @JsonProperty("obo_id")
-    Identifier oboId;
+    private Identifier oboId;
 
     @JsonProperty("label")
-    String name;
+    private String name;
 
     @JsonProperty("description")
-    String[] description;
+    private String[] description;
 
     @JsonProperty("ontology_name")
-    String ontologyName;
+    private String ontologyName;
 
     @JsonProperty("score")
-    String score;
+    private String score;
 
     @JsonProperty("ontology_iri")
-    String ontologyIri;
+    private String ontologyIri;
 
     @JsonProperty("is_defining_ontology")
-    boolean definedOntology;
+    private boolean definedOntology;
 
     @JsonProperty("is_obsolete")
-    boolean obsolete;
+    private boolean obsolete;
 
     @JsonProperty("annotation")
-    Annotation annotation;
+    private Annotation annotation;
 
     @JsonProperty("term_replaced_by")
-    String termReplacedBy;
-
+    private String termReplacedBy;
 
     @JsonProperty("obo_definition_citation")
-    OboDefinitionCitation[] oboDefinitionCitation;
+    private OboDefinitionCitation[] oboDefinitionCitation;
 
     public String getId() {
         return id;
@@ -163,5 +163,9 @@ public class SearchResult {
 
     public void setOboDefinitionCitation(OboDefinitionCitation[] oboDefinitionCitation) {
         this.oboDefinitionCitation = oboDefinitionCitation;
+    }
+
+    public Identifier getGlobalId(){
+        return (oboId != null)?oboId:shortName;
     }
 }

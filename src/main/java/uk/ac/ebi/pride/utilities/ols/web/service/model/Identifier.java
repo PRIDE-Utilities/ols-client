@@ -69,4 +69,11 @@ public class Identifier {
         result = 31 * result + type.hashCode();
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Identifier{" +
+                "identifier='" + identifier + '\'' +
+                '}';
+    }
 }

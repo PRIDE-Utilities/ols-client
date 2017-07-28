@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class TermQuery extends QueryResult{
 
     @JsonProperty("_embedded")
-    TermEmbedded termEmbedded;
+    private TermEmbedded termEmbedded;
 
     public Term[] getTerms() {
         if(termEmbedded != null)

@@ -1,7 +1,5 @@
-[![Build Status](https://travis-ci.org/PRIDE-Utilities/ols-client.svg?branch=master)](https://travis-ci.org/PRIDE-Utilities/ols-client)
 ols-client
 ======================
-# OLS Client 
   * [What is OLS Client?](#what-is-ols-client)
   * [Search Options](#search-options)
   * [Using OLS Client](#using-ols-client)

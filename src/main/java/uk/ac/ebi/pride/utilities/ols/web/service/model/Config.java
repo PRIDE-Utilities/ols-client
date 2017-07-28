@@ -3,6 +3,8 @@ package uk.ac.ebi.pride.utilities.ols.web.service.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Arrays;
+
 /**
  * @author Yasset Perez-Riverol (ypriverol@gmail.com)
  * Creation date 02/03/2016
@@ -11,69 +13,79 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Config {
 
     @JsonProperty("id")
-    String id;
+    private String id;
 
     @JsonProperty("versionIri")
-    String versionIri;
+    private String versionIri;
 
     @JsonProperty("title")
-    String name;
+    private String name;
 
     @JsonProperty("namespace")
-    String namespace;
+    private String namespace;
 
     @JsonProperty("preferredPrefix")
-    String preferredPrefix;
+    private String preferredPrefix;
 
     @JsonProperty("description")
-    String description;
+    private String description;
 
     @JsonProperty("homepage")
-    String homePage;
+    private String homePage;
 
     @JsonProperty("version")
-    String version;
+    private String version;
 
     @JsonProperty("mailingList")
-    String mailingList;
+    private String mailingList;
 
     @JsonProperty("creators")
-    String[] creators;
+    private String[] creators;
 
     @JsonProperty("annotations")
-    Annotation annotations;
+    private Annotation annotations;
 
     @JsonProperty("fileLocation")
-    String fileLocation;
+    private String fileLocation;
 
     @JsonProperty("reasonerType")
+    private
     String reasonerType;
 
     @JsonProperty("oboSlims")
+    private
     boolean oboLims;
 
     @JsonProperty("labelProperty")
+    private
     String labelProperty;
 
     @JsonProperty("definitionProperties")
+    private
     String[] definitionProperties;
 
     @JsonProperty("synonymProperties")
+    private
     String[] synonymProperties;
 
     @JsonProperty("hierarchicalProperties")
+    private
     String[] hierarchicalProperties;
 
     @JsonProperty("baseUris")
+    private
     String[] baseUris;
 
     @JsonProperty("hiddenProperties")
+    private
     String[] hiddenProperties;
 
     @JsonProperty("internalMetadataProperties")
+    private
     String[] internalMetadataProperties;
 
     @JsonProperty("skos")
+    private
     boolean skos;
 
     public boolean isSkos() {
@@ -250,5 +262,33 @@ public class Config {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "Config{" +
+                "id='" + id + '\'' +
+                ", versionIri='" + versionIri + '\'' +
+                ", name='" + name + '\'' +
+                ", namespace='" + namespace + '\'' +
+                ", preferredPrefix='" + preferredPrefix + '\'' +
+                ", description='" + description + '\'' +
+                ", homePage='" + homePage + '\'' +
+                ", version='" + version + '\'' +
+                ", mailingList='" + mailingList + '\'' +
+                ", creators=" + Arrays.toString(creators) +
+                ", annotations=" + annotations +
+                ", fileLocation='" + fileLocation + '\'' +
+                ", reasonerType='" + reasonerType + '\'' +
+                ", oboLims=" + oboLims +
+                ", labelProperty='" + labelProperty + '\'' +
+                ", definitionProperties=" + Arrays.toString(definitionProperties) +
+                ", synonymProperties=" + Arrays.toString(synonymProperties) +
+                ", hierarchicalProperties=" + Arrays.toString(hierarchicalProperties) +
+                ", baseUris=" + Arrays.toString(baseUris) +
+                ", hiddenProperties=" + Arrays.toString(hiddenProperties) +
+                ", internalMetadataProperties=" + Arrays.toString(internalMetadataProperties) +
+                ", skos=" + skos +
+                '}';
     }
 }

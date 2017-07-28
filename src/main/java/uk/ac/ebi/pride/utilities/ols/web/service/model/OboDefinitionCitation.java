@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class OboDefinitionCitation {
 
     @JsonProperty("oboXrefs")
-    OBOXRef[] oboXrefs;
+    private OBOXRef[] oboXrefs;
 
     public OboDefinitionCitation() {
     }

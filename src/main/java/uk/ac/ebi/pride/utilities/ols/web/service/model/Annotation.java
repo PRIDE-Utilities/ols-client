@@ -35,7 +35,7 @@ public class Annotation {
         }
     }
 
-    public Map<String, List<String>> annotation = new HashMap<String, List<String>>();
+    public Map<String, List<String>> annotation = new HashMap<>();
 
     @JsonAnyGetter
     public Map<String, List<String>> any() {

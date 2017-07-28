@@ -1,7 +1,7 @@
 package uk.ac.ebi.pride.utilities.ols.web.service.model;
 
 /**
- * Created by olgavrou on 25/05/2016.
+ * @author olgavrou
  */
 public class FieldList {
 
@@ -85,29 +85,29 @@ public class FieldList {
         StringBuilder fieldList = new StringBuilder("fieldList=");
 
         if (getIri() != null)
-            fieldList.append(getIri() + ",");
+            fieldList.append(getIri()).append(",");
         if (getLabel() != null)
-            fieldList.append(getLabel() + ",");
+            fieldList.append(getLabel()).append(",");
         if (getShortForm() != null)
-            fieldList.append(getShortForm() + ",");
+            fieldList.append(getShortForm()).append(",");
         if (getOboId() != null)
-            fieldList.append(getOboId() + ",");
+            fieldList.append(getOboId()).append(",");
         if (getOntologyName() != null)
-            fieldList.append(getOntologyName() + ",");
+            fieldList.append(getOntologyName()).append(",");
         if (getOntologyPrefix() != null)
-            fieldList.append(getOntologyPrefix() + ",");
+            fieldList.append(getOntologyPrefix()).append(",");
         if (getDescription() != null)
-            fieldList.append(getDescription() + ",");
+            fieldList.append(getDescription()).append(",");
         if (getType() != null)
-            fieldList.append(getType() + ",");
+            fieldList.append(getType()).append(",");
         if (getSynonyms() != null)
-            fieldList.append(getSynonyms() + ",");
+            fieldList.append(getSynonyms()).append(",");
         if (getScore() != null)
-            fieldList.append(getScore() + ",");
+            fieldList.append(getScore()).append(",");
         if (getOntologyIri() != null)
-            fieldList.append(getOntologyIri() + ",");
+            fieldList.append(getOntologyIri()).append(",");
         if (getIsDefiningOntology() != null){
-            fieldList.append(getIsDefiningOntology() + ",");
+            fieldList.append(getIsDefiningOntology()).append(",");
         }
 
         return fieldList.toString();
