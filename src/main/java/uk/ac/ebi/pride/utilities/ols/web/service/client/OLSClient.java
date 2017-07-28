@@ -192,20 +192,19 @@ public class OLSClient implements Client {
      * @throws RestClientException if there are problems connecting to the REST service.
      */
     public Term getTermByIRIId(String iriId, String ontologyId) throws RestClientException {
-        Term result = null;
-        iriId = iriId.replaceAll(":", "%253A");
-        iriId = iriId.replaceAll("/", "%252F");
-        String url = config.getProtocol() + "://" + config.getHostName() +
-            "api/ontologies/" + ontologyId.toLowerCase() + "/terms/";
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).path(iriId);
-        UriComponents components = builder.build(true);
-        URI uri = components.toUri();
-        logger.debug("" + uri);
-        Term term = this.restTemplate.getForObject(uri, Term.class);
-        if (term != null) {
-            result = term;
+
+        String query = String.format("iri=%s",
+            iriId);
+
+        logger.debug(query);
+        URI uri = encodeURL("/api/ontologies/" + ontologyId + "/terms", query);
+        TermQuery result = this.restTemplate.getForObject(uri, TermQuery.class);
+
+        if (result != null && result.getTerms() != null && result.getTerms().length == 1) {
+            return result.getTerms()[0];
         }
-        return result;
+
+        return null;
     }
 
     public List<String> getTermDescription(Identifier termId, String ontologyId) throws RestClientException {
