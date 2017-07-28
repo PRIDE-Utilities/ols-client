@@ -208,8 +208,6 @@ public class OLSClientTest {
         assertEquals(ontology.getNamespace(),"go");
     }
 
-
-
     @Test
     public void testGetMetaData() throws Exception {
         Identifier identifier1 = new Identifier("MI:0018", Identifier.IdentifierType.OBO);
