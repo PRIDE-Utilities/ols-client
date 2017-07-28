@@ -95,11 +95,8 @@ public class OLSClientTest {
 
     @Test
     public void testGetTermsByAnnotationData() throws Exception {
-
         List<Term> annotations = olsClient.getTermsByAnnotationData("mod","DiffAvg", 30, 140);
-
         Assert.assertTrue(annotations.size() > 0);
-
     }
 
     @Test
@@ -139,9 +136,7 @@ public class OLSClientTest {
     public void testGetExactTerm() throws Exception {
         String termLabel = "allosteric change in dynamics";
         String ontologyName = "mi";
-
         Term term = olsClient.getExactTermByName(termLabel, ontologyName);
-
         assertNotNull(term);
         assertEquals(term.getLabel(), termLabel);
         assertEquals(term.getOntologyName(), ontologyName);
@@ -169,21 +164,16 @@ public class OLSClientTest {
         String termName = "liver";
         String ontologyName = "efo";
         List <Term > terms = olsClient.getExactTermsByName(termName, null);
-
         Assert.assertNotNull(terms);
         Assert.assertTrue(!terms.isEmpty());
-
         for (Term term : terms){
             Assert.assertTrue(term.getLabel().toLowerCase().contains(termName));
         }
-
         terms = olsClient.getExactTermsByName(termName, ontologyName);
-
         Assert.assertNotNull(terms);
         Assert.assertTrue(!terms.isEmpty());
         Assert.assertTrue(terms.size() == 1);
         Assert.assertEquals(terms.get(0).getIri().getIdentifier(),"http://purl.obolibrary.org/obo/UBERON_0002107");
-
     }
 
     @Test
@@ -193,41 +183,29 @@ public class OLSClientTest {
         String parentTerm = "http://www.ebi.ac.uk/efo/EFO_0000635"; //organism part
         List <Term > termsFromParent = olsClient.getExactTermsByNameFromParent(termName, null, parentTerm);
         List <Term > terms = olsClient.getExactTermsByName(termName, null);
-
         Assert.assertNotNull(termsFromParent);
         Assert.assertNotEquals(termsFromParent.size(), terms.size());
-
-
         terms = olsClient.getExactTermsByNameFromParent(termName, ontologyName, parentTerm);
-
         Assert.assertNotNull(terms);
         Assert.assertTrue(!terms.isEmpty());
         Assert.assertEquals(terms.get(0).getIri().getIdentifier(),"http://purl.obolibrary.org/obo/UBERON_0002107");
         Assert.assertEquals(terms.get(0).getOntologyName().toLowerCase(),"efo");
-
     }
 
     @Test
     public void testGetOntologyFromId(){
-
         Ontology ontology = olsClient.getOntologyFromId(URI.create("http://www.ebi.ac.uk/efo/efo.owl"));
         assertEquals(ontology.getNamespace(),"efo");
-
-        ontology = olsClient.getOntologyFromId(URI.create("http://purl.obolibrary.org/obo/pride_cv.obo"));
+        ontology = olsClient.getOntologyFromId(URI.create("http://purl.obolibrary.org/obo/pride"));
         assertEquals(ontology.getNamespace(),"pride");
-
         ontology = olsClient.getOntologyFromId(URI.create("http://purl.enanomapper.org/onto/enanomapper.owl"));
         assertEquals(ontology.getNamespace(),"enm");
-
         ontology = olsClient.getOntologyFromId(URI.create("file:/C:/Lea/ontologies/environnement/leo.obo"));
         assertEquals(ontology.getNamespace(),"eol");
-
         ontology = olsClient.getOntologyFromId(URI.create("http://www.bio.ntnu.no/ontology/GeXO/gexo.owl"));
         assertEquals(ontology.getNamespace(),"gexo");
-
         ontology = olsClient.getOntologyFromId(URI.create("http://purl.obolibrary.org/obo/go.owl"));
         assertEquals(ontology.getNamespace(),"go");
-
     }
 
 
@@ -261,7 +239,6 @@ public class OLSClientTest {
 
     @Test
     public void testGetLabelByIriString(){
-
         String iri = "http://www.orpha.net/ORDO/Orphanet_101150";
         List<Term> terms = olsClient.getExactTermsByIriString(iri);
         assertTrue(terms.size() > 0);
@@ -272,18 +249,13 @@ public class OLSClientTest {
     public void testObsolete(){
         String id = "http://edamontology.org/data_0007";
         assertTrue(olsClient.isObsolete(id));
-
         String oboid = "EFO:0005099";
         assertTrue(olsClient.isObsolete(oboid, "efo"));
-
         String shortForm = "EFO_0005099";
         assertTrue(olsClient.isObsolete(shortForm, "efo"));
-
         String iri = "http://www.ebi.ac.uk/efo/EFO_0005099";
         assertTrue(olsClient.isObsolete(iri, "efo"));
-
         assertTrue(olsClient.isObsolete("MS:1001057", "ms"));
-
         assertTrue(olsClient.isObsolete("EFO_0000891"));
     }
 
@@ -294,25 +266,20 @@ public class OLSClientTest {
         Term term = olsClient.getReplacedBy(id);
         String termiri = term.getIri().getIdentifier();
         assertEquals("http://purl.obolibrary.org/obo/PO_0025197", termiri);
-
         term = olsClient.getReplacedBy(id, ontology);
         termiri = term.getIri().getIdentifier();
         assertEquals("http://purl.obolibrary.org/obo/PO_0025197", termiri);
-
         id = "EFO:0005099";
         term = olsClient.getReplacedBy(id, ontology);
         termiri = term.getIri().getIdentifier();
         assertEquals("http://purl.obolibrary.org/obo/PO_0025197", termiri);
-
         id = "http://www.ebi.ac.uk/efo/EFO_0005099";
         term = olsClient.getReplacedBy(id, ontology);
         termiri = term.getIri().getIdentifier();
         assertEquals("http://purl.obolibrary.org/obo/PO_0025197", termiri);
-
         id = "EFO_0000400";
         term = olsClient.getReplacedBy(id, ontology);
         assertNull(term);
-
         id = "EFO_0000891";
         term = olsClient.getReplacedBy(id);
         assertEquals("http://purl.obolibrary.org/obo/UBERON_0000010", term.getIri().getIdentifier());
