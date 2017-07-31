@@ -289,4 +289,12 @@ public class OLSClientTest {
         term = olsClient.getTermByIRIId(term.getIri().getIdentifier(), term.getOntologyPrefix());
         Assert.assertTrue(term.getTermOBOId().getIdentifier().equalsIgnoreCase("GO:0031145"));
     }
+
+    @Test
+    public void testGetTermByNameSetPageSizeAndNum(){
+        olsClient.setSearchPageNum(0);
+        olsClient.setSearchPageSize(20);
+        List<Term> terms = olsClient.getTermsByName("liver", null, false);
+        assertTrue(terms.size() <= 20);
+    }
 }
