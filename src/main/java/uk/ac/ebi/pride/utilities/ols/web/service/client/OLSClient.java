@@ -103,16 +103,18 @@ public class OLSClient implements Client {
      */
     public OLSClient(AbstractOLSWsConfig config) {
         this.config = config;
-        this.restTemplate = new RestTemplate(getClientHttpRequestFactory());
+        this.restTemplate = new RestTemplate();
+        this.restTemplate = new RestTemplate();
+//        this.restTemplate = new RestTemplate(getClientHttpRequestFactory());
         this.searchPageSize = Constants.SEARCH_PAGE_SIZE;
         this.searchPageNum = -1;
     }
 
-    private ClientHttpRequestFactory getClientHttpRequestFactory() {
-        HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory();
-        clientHttpRequestFactory.setConnectTimeout(TIME_OUT);
-        return clientHttpRequestFactory;
-    }
+//    private ClientHttpRequestFactory getClientHttpRequestFactory() {
+//        HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory();
+//        clientHttpRequestFactory.setConnectTimeout(TIME_OUT);
+//        return clientHttpRequestFactory;
+//    }
 
 
     public RestTemplate getRestTemplate() {
