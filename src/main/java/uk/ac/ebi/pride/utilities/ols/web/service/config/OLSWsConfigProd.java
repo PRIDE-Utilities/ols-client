@@ -8,6 +8,6 @@ import uk.ac.ebi.pride.utilities.ols.web.service.utils.Constants;
 public class OLSWsConfigProd extends AbstractOLSWsConfig {
 
     public OLSWsConfigProd() {
-        super(Constants.OLS_PROTOCOL, Constants.OLS_SERVER);
+        super(Constants.OLS_SECURE_PROTOCOL, Constants.OLS_SERVER);
     }
 }
