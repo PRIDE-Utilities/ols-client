@@ -6,8 +6,6 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ebi.pride.utilities.ols.web.service.config.AbstractOLSWsConfig;
 import uk.ac.ebi.pride.utilities.ols.web.service.model.*;
 import uk.ac.ebi.pride.utilities.ols.web.service.utils.Constants;
@@ -32,6 +30,8 @@ public class OLSClient implements Client {
 
     private String queryField;
     private String fieldList;
+    private int searchPageSize;
+    private int searchPageNum;
 
     private static int TIME_OUT = 5000;
 
@@ -73,6 +73,22 @@ public class OLSClient implements Client {
         return fieldList;
     }
 
+    public int getSearchPageSize() {
+        return searchPageSize;
+    }
+
+    public void setSearchPageSize(int searchPageSize) {
+        this.searchPageSize = searchPageSize;
+    }
+
+    public int getSearchPageNum() {
+        return searchPageNum;
+    }
+
+    public void setSearchPageNum(int searchPageNum) {
+        this.searchPageNum = searchPageNum;
+    }
+
     public void setFieldList(String fieldList) {
         this.fieldList = fieldList;
     }
@@ -87,14 +103,18 @@ public class OLSClient implements Client {
      */
     public OLSClient(AbstractOLSWsConfig config) {
         this.config = config;
-        this.restTemplate = new RestTemplate(getClientHttpRequestFactory());
+        this.restTemplate = new RestTemplate();
+        this.restTemplate = new RestTemplate();
+//        this.restTemplate = new RestTemplate(getClientHttpRequestFactory());
+        this.searchPageSize = Constants.SEARCH_PAGE_SIZE;
+        this.searchPageNum = -1;
     }
 
-    private ClientHttpRequestFactory getClientHttpRequestFactory() {
-        HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory();
-        clientHttpRequestFactory.setConnectTimeout(TIME_OUT);
-        return clientHttpRequestFactory;
-    }
+//    private ClientHttpRequestFactory getClientHttpRequestFactory() {
+//        HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory();
+//        clientHttpRequestFactory.setConnectTimeout(TIME_OUT);
+//        return clientHttpRequestFactory;
+//    }
 
 
     public RestTemplate getRestTemplate() {
@@ -490,10 +510,6 @@ public class OLSClient implements Client {
         return getTermsByName(partialName, ontologyID, reverseKeyOrder, null);
     }
 
-    public List<Term> getTermsByName(String partialName, String ontologyID, boolean reverseKeyOrder, int page) {
-        return getTermsByName(partialName, ontologyID, reverseKeyOrder, null);
-    }
-
     public List<Term> getTermsByNameFromParent(String partialName, String ontologyID, boolean reverseKeyOrder, String childrenOf) {
         return  getTermsByName(partialName, ontologyID, reverseKeyOrder, childrenOf);
     }
@@ -648,15 +664,33 @@ public class OLSClient implements Client {
      */
     private List<Term> searchByTerm(String termToSearch, String ontology, boolean exact, String childrenOf, boolean obsolete) throws RestClientException {
         List<Term> termResults = new ArrayList<>();
-        SearchQuery currentTermQuery = getSearchQuery(0, termToSearch, ontology, exact, childrenOf, obsolete, Constants.SEARCH_PAGE_SIZE);
         List<SearchResult> terms = new ArrayList<>();
+
+        int pageSize = getSearchPageSize();
+        if(pageSize <= 0){
+            pageSize = Constants.SEARCH_PAGE_SIZE;
+        }
+
+        SearchQuery currentTermQuery = getSearchQuery(0, termToSearch, ontology, exact, childrenOf, obsolete, pageSize);
+
+        int pageNum = getSearchPageNum();
+        if (pageNum < 0){
+            pageNum = new Integer(currentTermQuery.getResponse().getNumFound() / pageSize);
+        }
+
         if (currentTermQuery != null && currentTermQuery.getResponse() != null && currentTermQuery.getResponse().getSearchResults() != null) {
             terms.addAll(Arrays.asList(currentTermQuery.getResponse().getSearchResults()));
             if (currentTermQuery.getResponse().getSearchResults().length < currentTermQuery.getResponse().getNumFound()) {
-                for (int i = 1; i < currentTermQuery.getResponse().getNumFound() / currentTermQuery.getResponse().getSearchResults().length + 1; i++) {
-                    SearchQuery termQuery = getSearchQuery(i, termToSearch, ontology, exact, childrenOf, obsolete, Constants.SEARCH_PAGE_SIZE);
-                    if (termQuery != null && termQuery.getResponse() != null && termQuery.getResponse().getSearchResults() != null)
+                int start = 0;
+                for(int i = 0; i < pageNum; i++){
+                    start = start + pageSize;
+                    SearchQuery termQuery = getSearchQuery(start, termToSearch, ontology, exact, childrenOf, obsolete, pageSize);
+                    if (termQuery != null && termQuery.getResponse() != null && termQuery.getResponse().getSearchResults() != null){
+                        if(termQuery.getResponse().getSearchResults().length == 0) {
+                            break;
+                        }
                         terms.addAll(Arrays.asList(termQuery.getResponse().getSearchResults()));
+                    }
                 }
             }
         }
