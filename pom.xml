@@ -9,11 +9,10 @@
     <url>http://github.com/PRIDE-Utilities/ols-client</url>
     <description>Open-source java library to handle requests to the OLS RESTful web service.</description>
 
-    <parent>
-        <groupId>uk.ac.ebi.pride.architectural</groupId>
-        <artifactId>pride-core</artifactId>
-        <version>1.0.1</version>
-    </parent>
+    <organization>
+        <name>EMBL-European Bioinformatics Institute</name>
+        <url>http://www.ebi.ac.uk</url>
+    </organization>
 
     <developers>
         <developer>
@@ -48,18 +47,26 @@
             <roles>
                 <role>developer</role>
             </roles>
-            <timezone>Europe/London</timezone>
+            <timezone>0</timezone>
+        </developer>
+        <developer>
+            <id>olgavrou</id>
+            <name>Olga Vrousgou</name>
+            <email>olgavrou@ebi.ac.uk</email>
+            <organization>EBI</organization>
+            <organizationUrl>http://www.ebi.ac.uk</organizationUrl>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>0</timezone>
         </developer>
     </developers>
 
     <properties>
-        <uk.ac.ebi.pride.architectural-pride-logging.version>1.0.0</uk.ac.ebi.pride.architectural-pride-logging.version>
-        <uk.ac.ebi.pride.architectural-pride-tdd.version>1.0.3</uk.ac.ebi.pride.architectural-pride-tdd.version>
         <github.global.server>github</github.global.server>
     </properties>
 
     <dependencies>
-        <!-- TODO - Review Spring Framework dependencies after issue PLIBT-138 is closed -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
@@ -75,13 +82,11 @@
             <artifactId>spring-context-support</artifactId>
             <version>4.2.5.RELEASE</version>
         </dependency>
-
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.2</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
         </dependency>
-
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -92,21 +97,26 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.4</version>
         </dependency>
-        <!-- Logging -->
         <dependency>
-            <groupId>uk.ac.ebi.pride.architectural</groupId>
-            <artifactId>pride-logging</artifactId>
-            <version>${uk.ac.ebi.pride.architectural-pride-logging.version}</version>
-            <type>pom</type>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>1.7.19</version>
         </dependency>
-        <!-- TDD -->
         <dependency>
-            <groupId>uk.ac.ebi.pride.architectural</groupId>
-            <artifactId>pride-tdd</artifactId>
-            <version>${uk.ac.ebi.pride.architectural-pride-tdd.version}</version>
-            <type>pom</type>
-            <scope>test</scope>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.1.6</version>
         </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.1.6</version>
+        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.apache.httpcomponents</groupId>-->
+            <!--<artifactId>httpclient</artifactId>-->
+            <!--<version>4.5.2</version>-->
+        <!--</dependency>-->
     </dependencies>
 
     <build>
@@ -128,7 +138,37 @@
         </testResources>
 
         <plugins>
-            <!-- TODO - Review the use of this plugin, in case it is interesting to add to our devops infrastructure -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.5.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <remoteTagging>true</remoteTagging>
+                    <goals>deploy</goals>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.3</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <artifactId>maven-site-plugin</artifactId>
                 <version>3.5.1</version>
