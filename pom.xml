@@ -48,7 +48,18 @@
             <roles>
                 <role>developer</role>
             </roles>
-            <timezone>Europe/London</timezone>
+            <timezone>0</timezone>
+        </developer>
+        <developer>
+            <id>olgavrou</id>
+            <name>Olga Vrousgou</name>
+            <email>olgavrou@ebi.ac.uk</email>
+            <organization>EBI</organization>
+            <organizationUrl>http://www.ebi.ac.uk</organizationUrl>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>0</timezone>
         </developer>
     </developers>
 
@@ -75,13 +86,6 @@
             <artifactId>spring-context-support</artifactId>
             <version>4.2.5.RELEASE</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.2</version>
-        </dependency>
-
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>

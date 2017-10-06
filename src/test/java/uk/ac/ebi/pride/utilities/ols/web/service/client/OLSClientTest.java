@@ -200,7 +200,7 @@ public class OLSClientTest {
         assertEquals(ontology.getNamespace(),"pride");
         ontology = olsClient.getOntologyFromId(URI.create("http://purl.enanomapper.org/onto/enanomapper.owl"));
         assertEquals(ontology.getNamespace(),"enm");
-        ontology = olsClient.getOntologyFromId(URI.create("file:/C:/Lea/ontologies/environnement/leo.obo"));
+        ontology = olsClient.getOntologyFromId(URI.create("http://opendata.inra.fr/EOL/eol_ontology"));
         assertEquals(ontology.getNamespace(),"eol");
         ontology = olsClient.getOntologyFromId(URI.create("http://www.bio.ntnu.no/ontology/GeXO/gexo.owl"));
         assertEquals(ontology.getNamespace(),"gexo");
@@ -288,5 +288,21 @@ public class OLSClientTest {
         Term term = olsClient.getTermById(new Identifier("GO:0031145", Identifier.IdentifierType.OBO), "GO");
         term = olsClient.getTermByIRIId(term.getIri().getIdentifier(), term.getOntologyPrefix());
         Assert.assertTrue(term.getTermOBOId().getIdentifier().equalsIgnoreCase("GO:0031145"));
+    }
+
+    @Test
+    public void testGetTermByNameSetPageSizeAndNum(){
+        olsClient.setSearchPageNum(0);
+        olsClient.setSearchPageSize(20);
+        List<Term> terms = olsClient.getTermsByName("liver", null, false);
+        assertTrue(terms.size() <= 20);
+    }
+
+    @Test
+    public void testGetExactTermByIriString(){
+        List<Term> terms = olsClient.getExactTermsByIriString("http://purl.obolibrary.org/obo/UBERON_0000014");
+        for (Term term : terms){
+            assertTrue(term.getIri().getIdentifier().equals("http://purl.obolibrary.org/obo/UBERON_0000014"));
+        }
     }
 }

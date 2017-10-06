@@ -8,11 +8,11 @@ import uk.ac.ebi.pride.utilities.ols.web.service.utils.Constants;
 public class OLSWsConfig extends AbstractOLSWsConfig {
 
     public OLSWsConfig() {
-        super(Constants.OLS_SECURE_PROTOCOL, Constants.OLS_SERVER);
+        super(Constants.OLS_PROTOCOL, Constants.OLS_SERVER);
     }
 
     public OLSWsConfig(String hostName){
-        super(Constants.OLS_SECURE_PROTOCOL, hostName);
+        super(Constants.OLS_PROTOCOL, hostName);
     }
 
     public OLSWsConfig(String protocol, String hostName){
