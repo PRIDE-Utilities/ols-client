@@ -2,8 +2,6 @@ package uk.ac.ebi.pride.utilities.ols.web.service.client;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ebi.pride.utilities.ols.web.service.config.AbstractOLSWsConfig;
@@ -752,7 +750,7 @@ public class OLSClient implements Client {
             }
 
             if(ontology != null && !ontology.isEmpty() && term != null && term.getOntologyName() != null){
-                if(!term.getOntologyName().toLowerCase().equals(ontology)){
+                if(!term.getOntologyName().equalsIgnoreCase(ontology)){
                     return null;
                 }
             }
