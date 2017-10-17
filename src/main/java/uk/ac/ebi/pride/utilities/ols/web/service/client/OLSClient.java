@@ -2,8 +2,6 @@ package uk.ac.ebi.pride.utilities.ols.web.service.client;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ebi.pride.utilities.ols.web.service.config.AbstractOLSWsConfig;
@@ -297,8 +295,8 @@ public class OLSClient implements Client {
     public List<Term> getTermChildren(Identifier termId, String ontologyId, int distance) throws RestClientException {
         List<Term> terms = new ArrayList<>();
         Term term = getTermById(termId, ontologyId);
-        if (term != null && term.getLink() != null && term.getLink().getChildrenRef() != null){
-            terms = getTermChildrenMap(term.getLink().getChildrenRef(), distance);
+        if (term != null && term.getLink() != null && term.getLink().getAllChildrenRef() != null) {
+            terms = getTermChildrenMap(term.getLink().getAllChildrenRef(), distance);
         }
         return terms;
     }
@@ -315,9 +313,8 @@ public class OLSClient implements Client {
     public List<Term> getTermParents(Identifier termId, String ontologyId, int distance) throws RestClientException {
         List<Term> terms = new ArrayList<>();
         Term term = getTermById(termId, ontologyId);
-        if (term != null && term.getLink() != null &&
-                term.getLink().getParentsRef() != null)
-            terms = getTermParentsMap(term.getLink().getParentsRef(), distance);
+        if (term != null && term.getLink() != null && term.getLink().getAllParentsRef() != null)
+            terms = getTermParentsMap(term.getLink().getAllParentsRef(), distance);
         return terms;
     }
 
@@ -752,7 +749,7 @@ public class OLSClient implements Client {
             }
 
             if(ontology != null && !ontology.isEmpty() && term != null && term.getOntologyName() != null){
-                if(!term.getOntologyName().toLowerCase().equals(ontology)){
+                if(!term.getOntologyName().equalsIgnoreCase(ontology)){
                     return null;
                 }
             }
