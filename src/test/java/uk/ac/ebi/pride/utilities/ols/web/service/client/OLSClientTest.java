@@ -5,10 +5,15 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.ebi.pride.utilities.ols.web.service.config.OLSWsConfig;
-import uk.ac.ebi.pride.utilities.ols.web.service.model.*;
+import uk.ac.ebi.pride.utilities.ols.web.service.model.Identifier;
+import uk.ac.ebi.pride.utilities.ols.web.service.model.Ontology;
+import uk.ac.ebi.pride.utilities.ols.web.service.model.Term;
 
 import java.net.URI;
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -66,6 +71,21 @@ public class OLSClientTest {
     }
 
     @Test
+    public void testGetTermChildrenByOBOIdMI() throws Exception {
+        List<Term> children = olsClient.getTermChildren(new Identifier("MI:0954", Identifier.IdentifierType.OBO), "mi", 1);
+        logger.debug(children.toString());
+        Assert.assertFalse(children.isEmpty());
+        Assert.assertTrue(contains(children, new Identifier("MI:0956", Identifier.IdentifierType.OBO)));
+    }
+
+    @Test
+    public void testGetTermParentsByOBOIdGo() throws Exception {
+        List<Term> children = olsClient.getTermChildren(new Identifier("GO:0000988", Identifier.IdentifierType.OBO), "GO", 1);
+        logger.debug(children.toString());
+        Assert.assertTrue(contains(children, new Identifier("GO:0000990", Identifier.IdentifierType.OBO)));
+    }
+
+    @Test
     public void testGetTermChildrenByShortFormId() throws Exception {
         List<Term> children = olsClient.getTermChildren(new Identifier("MS_1001143", Identifier.IdentifierType.OWL), "ms", 1);
         logger.debug(children.toString());
@@ -104,6 +124,17 @@ public class OLSClientTest {
         List<Term> parents = olsClient.getTermParents(new Identifier("GO:0000990", Identifier.IdentifierType.OBO), "GO", 1);
         logger.debug(parents.toString());
         Assert.assertTrue(contains(parents, new Identifier("GO:0000988", Identifier.IdentifierType.OBO)));
+    }
+
+    @Test
+    public void testGetTermParentsByOBOIdMI() throws Exception {
+        List<Term> parents = olsClient.getTermParents(new Identifier("MI:0013", Identifier.IdentifierType.OBO), "MI", 3);
+        logger.debug(parents.toString());
+        Assert.assertNotNull(parents);
+        Assert.assertEquals(3, parents.size());
+        Assert.assertTrue(contains(parents, new Identifier("MI:0000", Identifier.IdentifierType.OBO)));
+        Assert.assertTrue(contains(parents, new Identifier("MI:0001", Identifier.IdentifierType.OBO)));
+        Assert.assertTrue(contains(parents, new Identifier("MI:0045", Identifier.IdentifierType.OBO)));
     }
 
     @Test
@@ -198,7 +229,7 @@ public class OLSClientTest {
         assertEquals(ontology.getNamespace(),"efo");
         ontology = olsClient.getOntologyFromId(URI.create("http://purl.obolibrary.org/obo/pride"));
         assertEquals(ontology.getNamespace(),"pride");
-        ontology = olsClient.getOntologyFromId(URI.create("http://purl.enanomapper.org/onto/enanomapper.owl"));
+        ontology = olsClient.getOntologyFromId(URI.create("http://purl.enanomapper.net/onto/enanomapper.owl"));
         assertEquals(ontology.getNamespace(),"enm");
         ontology = olsClient.getOntologyFromId(URI.create("http://opendata.inra.fr/EOL/eol_ontology"));
         assertEquals(ontology.getNamespace(),"eol");
@@ -248,10 +279,13 @@ public class OLSClientTest {
         String id = "http://edamontology.org/data_0007";
         assertTrue(olsClient.isObsolete(id));
         String oboid = "EFO:0005099";
+        assertTrue(olsClient.isObsolete(oboid, "EFO"));
         assertTrue(olsClient.isObsolete(oboid, "efo"));
         String shortForm = "EFO_0005099";
+        assertTrue(olsClient.isObsolete(shortForm, "EFO"));
         assertTrue(olsClient.isObsolete(shortForm, "efo"));
         String iri = "http://www.ebi.ac.uk/efo/EFO_0005099";
+        assertTrue(olsClient.isObsolete(iri, "EFO"));
         assertTrue(olsClient.isObsolete(iri, "efo"));
         assertTrue(olsClient.isObsolete("MS:1001057", "ms"));
         assertTrue(olsClient.isObsolete("EFO_0000891"));

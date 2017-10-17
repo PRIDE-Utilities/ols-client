@@ -295,8 +295,8 @@ public class OLSClient implements Client {
     public List<Term> getTermChildren(Identifier termId, String ontologyId, int distance) throws RestClientException {
         List<Term> terms = new ArrayList<>();
         Term term = getTermById(termId, ontologyId);
-        if (term != null && term.getLink() != null && term.getLink().getChildrenRef() != null){
-            terms = getTermChildrenMap(term.getLink().getChildrenRef(), distance);
+        if (term != null && term.getLink() != null && term.getLink().getAllChildrenRef() != null) {
+            terms = getTermChildrenMap(term.getLink().getAllChildrenRef(), distance);
         }
         return terms;
     }
@@ -313,9 +313,8 @@ public class OLSClient implements Client {
     public List<Term> getTermParents(Identifier termId, String ontologyId, int distance) throws RestClientException {
         List<Term> terms = new ArrayList<>();
         Term term = getTermById(termId, ontologyId);
-        if (term != null && term.getLink() != null &&
-                term.getLink().getParentsRef() != null)
-            terms = getTermParentsMap(term.getLink().getParentsRef(), distance);
+        if (term != null && term.getLink() != null && term.getLink().getAllParentsRef() != null)
+            terms = getTermParentsMap(term.getLink().getAllParentsRef(), distance);
         return terms;
     }
 
