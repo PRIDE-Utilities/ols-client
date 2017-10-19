@@ -241,10 +241,18 @@ public class OLSClientTest {
 
     @Test
     public void testGetMetaData() throws Exception {
+        Identifier identifier0 = new Identifier("MI:0446", Identifier.IdentifierType.OBO);
+        Map metadata0 = olsClient.getMetaData(identifier0, "mi");
+        Assert.assertEquals(1, metadata0.size());
+        Assert.assertNotNull(metadata0.get("definition"));
+        Assert.assertEquals("PubMed is designed to provide access to citations from biomedical literature. The data can be found at both NCBI PubMed and Europe PubMed Central. \n" +
+                "http://www.ncbi.nlm.nih.gov/pubmed\n" +
+                "http://europepmc.org", metadata0.get("definition"));
         Identifier identifier1 = new Identifier("MI:0018", Identifier.IdentifierType.OBO);
         Map metadata1 = olsClient.getMetaData(identifier1, "mi");
-        Assert.assertEquals(1, metadata1.size());
+        Assert.assertEquals(2, metadata1.size());
         Assert.assertNotNull(metadata1.get("synonym"));
+        Assert.assertNotNull(metadata1.get("definition"));
         Identifier identifier2 = new Identifier("MOD:01161", Identifier.IdentifierType.OBO);
         Map metadata2 = olsClient.getMetaData(identifier2, "mod");
         Map synonyms = (Map) metadata2.get("synonym");

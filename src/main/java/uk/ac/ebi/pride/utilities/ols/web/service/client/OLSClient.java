@@ -1101,8 +1101,13 @@ public class OLSClient implements Client {
     public String getFirstTermDescription(Identifier termId, String ontologyId) throws RestClientException {
         Term term = getTermById(termId, ontologyId);
         String  description = null;
-        if (term != null && term.getDescription() != null){
-            description = term.getDescription()[0];
+        if (term != null) {
+            if (term.getDescription() != null) {
+                description = term.getDescription()[0];
+            }
+            else if (term.getAnnotation() != null && term.getAnnotation().containsAnnotation(("definition"))){
+                description = term.getAnnotation().getAnnotation("definition").get(0);
+            }
         }
         return description;
     }
