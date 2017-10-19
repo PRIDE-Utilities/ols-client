@@ -1104,8 +1104,7 @@ public class OLSClient implements Client {
         if (term != null) {
             if (term.getDescription() != null) {
                 description = term.getDescription()[0];
-            }
-            else if (term.getAnnotation() != null && term.getAnnotation().containsAnnotation(("definition"))){
+            } else if (term.getAnnotation() != null && term.getAnnotation().containsAnnotation(("definition"))){
                 description = term.getAnnotation().getAnnotation("definition").get(0);
             }
         }
