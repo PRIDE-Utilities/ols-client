@@ -3,7 +3,7 @@
     <groupId>uk.ac.ebi.pride.utilities</groupId>
     <artifactId>ols-client</artifactId>
     <packaging>jar</packaging>
-    <version>2.12-SNAPSHOT</version>
+    <version>2.13-SNAPSHOT</version>
 
     <name>ols-client</name>
     <url>http://github.com/PRIDE-Utilities/ols-client</url>
@@ -12,7 +12,7 @@
     <parent>
         <groupId>uk.ac.ebi.pride.architectural</groupId>
         <artifactId>pride-core</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.3-SNAPSHOT</version>
     </parent>
 
     <developers>
@@ -64,8 +64,8 @@
     </developers>
 
     <properties>
-        <uk.ac.ebi.pride.architectural-pride-logging.version>1.0.0</uk.ac.ebi.pride.architectural-pride-logging.version>
-        <uk.ac.ebi.pride.architectural-pride-tdd.version>1.0.3</uk.ac.ebi.pride.architectural-pride-tdd.version>
+        <uk.ac.ebi.pride.architectural-pride-logging.version>1.0.1-SNAPSHOT</uk.ac.ebi.pride.architectural-pride-logging.version>
+        <uk.ac.ebi.pride.architectural-pride-tdd.version>1.0.4-SNAPSHOT</uk.ac.ebi.pride.architectural-pride-tdd.version>
         <github.global.server>github</github.global.server>
         <skipTests>true</skipTests>
     </properties>
@@ -90,7 +90,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.7.5</version>
+            <version>2.9.9</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -152,6 +152,27 @@
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>nexus-ebi-release-repo</id>
+            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-repo/</url>
+        </repository>
+        <repository>
+            <id>nexus-ebi-snapshot-repo</id>
+            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-snapshots/</url>
+        </repository>
+        <repository>
+            <id>pst-release</id>
+            <name>EBI Nexus Repository</name>
+            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/repositories/pst-release</url>
+        </repository>
+        <repository>
+            <id>pst-snapshots</id>
+            <name>EBI Nexus Snapshots Repository</name>
+            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/repositories/pst-snapshots</url>
+        </repository>
+    </repositories>
 
     <scm>
         <connection>scm:git:https://github.com/PRIDE-Utilities/ols-client.git</connection>
