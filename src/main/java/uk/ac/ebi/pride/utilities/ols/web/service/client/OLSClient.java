@@ -1035,10 +1035,13 @@ public class OLSClient implements Client {
         List<Term> terms = getAllOBOTermsFromOntology(ontologyID);
         List<Term> termResult = new ArrayList<>();
         for (Term term : terms) {
-            if (term != null && term.getOboXRefs() != null && term.containsXref(annotationType)) {
-                String termValue = term.getXRefValue(annotationType);
-                if (NumberUtils.isNumber(termValue) && Double.parseDouble(termValue) >= fromDblValue && Double.parseDouble(termValue) <= toDblValue)
-                    termResult.add(term);
+            if (term != null && term.getAnnotation() != null && term.getAnnotation().containsAnnotation(annotationType)) {
+                List<String> termValues = term.getAnnotation().getAnnotation(annotationType);
+                if (termValues != null && !termValues.isEmpty() && NumberUtils.isNumber(termValues.get(0))) {
+                    double value = Double.parseDouble(termValues.get(0));
+                    if (value >= fromDblValue && value <= toDblValue)
+                        termResult.add(term);
+                }
             }
         }
         return termResult;
