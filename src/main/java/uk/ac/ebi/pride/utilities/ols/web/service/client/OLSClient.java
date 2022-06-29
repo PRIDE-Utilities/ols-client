@@ -1102,7 +1102,7 @@ public class OLSClient implements Client {
         Term term = getTermById(termId, ontologyId);
         String  description = null;
         if (term != null) {
-            if (term.getDescription() != null) {
+            if (term.getDescription() != null && term.getDescription().length > 0) {
                 description = term.getDescription()[0];
             } else if (term.getAnnotation() != null && term.getAnnotation().containsAnnotation(("definition"))){
                 description = term.getAnnotation().getAnnotation("definition").get(0);
