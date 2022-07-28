@@ -398,11 +398,16 @@ public class OLSClient implements Client {
         Map<String, String> xrefs = new HashMap<>();
         if (term != null && term.getOboXRefs() != null) {
             for (OBOXRef xref : term.getOboXRefs()) {
-                if (xref.getDatabase() != null)
-                    xrefs.put(xref.getDatabase(), xref.getDescription());
+                if (xref.getDatabase() != null) {
+                    if (xref.getId() != null && !xref.getId().isEmpty()) {
+                        xrefs.put(xref.getDatabase(), xref.getId());
+                    } else if (xref.getDescription() != null && !xref.getDescription().isEmpty()) {
+                        xrefs.put(xref.getDatabase(), xref.getDescription());
+                    }
+                }
             }
         }
-        if(term != null && term.getOboDefinitionCitation() != null){
+        if (term != null && term.getOboDefinitionCitation() != null) {
             xrefs.putAll(this.getOboDefinitionCitationXRef(term));
         }
         return xrefs;
