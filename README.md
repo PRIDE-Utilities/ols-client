@@ -21,7 +21,8 @@ ols-client
 
 Five ways of searching the **OLS Client** is supported. See [Search Options](#search-options).
 
-[Go to top of page](#ols-client)
+
+## Search options
 
 ---
 Five ways of searching the **OLS Dialog** is supported:
@@ -42,8 +43,6 @@ When the wanted term has been found, select the term in the table and click the 
 
 For an example see the [Screenshots](#screenshots) section.
 
-[Go to top of page](#ols-client)
-
 ---
 ### Term ID Search 
 Term ID Search allows you the locate a given term and its details by inserting the term id, e.g., MOD:00425 or GO:0000269.
@@ -52,15 +51,11 @@ The results are displayed and selected in the same way as for results from a [Te
 
 For an example see the [Screenshots](#screenshots) section.
 
-[Go to top of page](#ols-client)
-
 ---
 ### PSI MOD Mass Search 
 PSI MOD Mass Search allows you to search the PSI-MOD ontology for specific modifications using the mass of the modification. There are four different mass types: DiffAvg and DiffMono corresponding to the average and mono mass of the mass change the modifications results in, and MassAvg and MassMono corresponding to the mass of the modified residue.
 
 Insert the mass, the mass accuracy and the mass type and click on "Search" to perform the search. The results are displayed and selected in the same way as for results from a [Term Name Search](#term-name-search).
-
-[Go to top of page](#ols-client)
 
 ---
 ### Browse Ontology
@@ -69,8 +64,6 @@ Browse Ontology makes it possible to find the wanted term by browsing the select
 The results are selected and used in the same way as for results from a [Term Name Search](#term-name-search).
 
 For an example see the [Screenshots](#screenshots) section.
-
-[Go to top of page](#ols-client)
 
 ---
 ## Using OLS Dialog
