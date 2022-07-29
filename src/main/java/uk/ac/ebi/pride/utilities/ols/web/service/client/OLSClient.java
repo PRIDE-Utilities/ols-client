@@ -1,7 +1,7 @@
 package uk.ac.ebi.pride.utilities.ols.web.service.client;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ebi.pride.utilities.ols.web.service.config.AbstractOLSWsConfig;
@@ -16,11 +16,12 @@ import java.util.*;
 
 
 /**
- * This class allows to query the Ontology Lockup service to retrirve information about
+ * This class allows to query the Ontology Lockup service to retrieve information about
  * CVTerms.
  *
  * @author ypriverol
  */
+@Slf4j
 public class OLSClient implements Client {
 
     private  RestTemplate restTemplate;
@@ -91,9 +92,6 @@ public class OLSClient implements Client {
         this.fieldList = fieldList;
     }
 
-    org.slf4j.Logger logger = LoggerFactory.getLogger(OLSClient.class);
-
-
     /**
      * Default constructor for Archive clients
      *
@@ -161,10 +159,9 @@ public class OLSClient implements Client {
      */
     public Term getTermByOBOId(String termOBOId, String ontologyId) throws RestClientException {
 
-        String query = String.format("obo_id=%s",
-                termOBOId);
+        String query = String.format("obo_id=%s",termOBOId);
 
-        logger.debug(query);
+        log.debug(query);
 
         URI uri = encodeURL("/api/ontologies/" + ontologyId + "/terms", query);
         TermQuery result = this.restTemplate.getForObject(uri, TermQuery.class);
@@ -189,7 +186,7 @@ public class OLSClient implements Client {
         String query = String.format("short_form=%s",
                 shortForm);
 
-        logger.debug(query);
+        log.debug(query);
 
         URI uri = encodeURL("/api/ontologies/" + ontologyId + "/terms", query);
         TermQuery result = this.restTemplate.getForObject(uri, TermQuery.class);
@@ -214,7 +211,7 @@ public class OLSClient implements Client {
         String query = String.format("iri=%s",
             iriId);
 
-        logger.debug(query);
+        log.debug(query);
         URI uri = encodeURL("/api/ontologies/" + ontologyId + "/terms", query);
         TermQuery result = this.restTemplate.getForObject(uri, TermQuery.class);
 
@@ -275,7 +272,7 @@ public class OLSClient implements Client {
     public Ontology getOntologyFromId(URI id){
         List<Ontology> ontologyList = getOntologies();
         for (Ontology ontology : ontologyList){
-            logger.debug(ontology.getConfig().getId());
+            log.debug(ontology.getConfig().getId());
             if (ontology.getConfig().getId().equals(id.toString())){
                 return ontology;
             }
@@ -367,7 +364,7 @@ public class OLSClient implements Client {
                 + "&rows=%s&start=%s&ontology=%s",
                 identifier, Constants.SEARCH_PAGE_SIZE, page, ontologyID);
 
-        logger.debug(query);
+        log.debug(query);
         URI uri = encodeURL("/api/search", query);
         return this.restTemplate.getForObject(uri, SearchQuery.class);
     }
@@ -420,7 +417,7 @@ public class OLSClient implements Client {
     private OntologyQuery getOntologyQuery(int page) throws RestClientException {
         String query = String.format("page=%s&size=%s",
                 page, Constants.ONTOLOGY_PAGE_SIZE);
-        logger.debug(query);
+        log.debug(query);
         URI uri = encodeURL("/api/ontologies", query);
         return this.restTemplate.getForObject(uri, OntologyQuery.class);
     }
@@ -459,7 +456,7 @@ public class OLSClient implements Client {
         String query = String.format("page=%s&size=%s",
                 page, Constants.TERM_PAGE_SIZE);
 
-        logger.debug(query);
+        log.debug(query);
 
         URI uri = encodeURL("/api/ontologies/" + ontologyID + "/terms/roots/", query);
         return this.restTemplate.getForObject(uri, TermQuery.class);
@@ -470,7 +467,7 @@ public class OLSClient implements Client {
         String query = String.format("page=%s&size=%s",
                 page, Constants.TERM_PAGE_SIZE);
 
-        logger.debug(query);
+        log.debug(query);
 
         URI uri = encodeURL("/api/ontologies/" + ontologyID + "/terms", query);
         return this.restTemplate.getForObject(uri, TermQuery.class);
@@ -890,7 +887,7 @@ public class OLSClient implements Client {
         if (obsolete)
             query += "&obsoletes=true";
 
-        logger.debug(query);
+        log.debug(query);
         URI uri = encodeURL("/api/search", query);
         return this.restTemplate.getForObject(uri, SearchQuery.class);
     }
@@ -914,7 +911,7 @@ public class OLSClient implements Client {
         String query = String.format("iri=%s",
                 iri);
 
-        logger.debug(query);
+        log.debug(query);
         URI uri = encodeURL("/api/ontologies/" + ontology + "/terms", query);
         return this.restTemplate.getForObject(uri, RetrieveTermQuery.class);
     }
@@ -925,7 +922,7 @@ public class OLSClient implements Client {
         query = String.format("id=%s",
                 id);
 
-        logger.debug(query);
+        log.debug(query);
         URI uri = encodeURL("/api/terms", query);
         return this.restTemplate.getForObject(uri, RetrieveTermQuery.class);
     }
