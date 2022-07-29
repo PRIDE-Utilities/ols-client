@@ -10,9 +10,7 @@ ols-client
  * Perez-Riverol Y, Uszkoreit J, Sanchez A, Ternent T, Del Toro N, Hermjakob H, Vizcaíno JA, Wang R. (2015). ms-data-core-api: An open-source, metadata-oriented library for computational proteomics. Bioinformatics. 2015 Apr 24. [PDF File](http://www.ncbi.nlm.nih.gov/pubmed/25910694) [Pubmed Record](http://www.ncbi.nlm.nih.gov/pubmed/25910694)
  * If you use **OLS Client** as part of a paper, please include the references above.
 
-## What is OLS Client? 
-
----
+## What is OLS Client?
 
 **OLS Client** is a Java API to the [Ontology Lookup Service](http://www.ebi.ac.uk/ols/) allowing easy access to an extensive list of biomedical ontologies (see [supported ontologies](http://www.ebi.ac.uk/ols/) for a complete list).
 
@@ -23,7 +21,6 @@ Five ways of searching the **OLS Client** is supported. See [Search Options](#se
 
 ## Search options
 
----
 Five ways of searching the **OLS Dialog** is supported:
   * [Term Name Search](#term-name-search)
   * [Term ID Search](#term-id-search)
@@ -66,21 +63,18 @@ For an example see the [Screenshots](#screenshots) section.
 
 ## Using OLS Dialog
 
----
-
 ### Running the Jar File
 Running the jar file (either by double clicking it, or running it from the command line) starts a small example showing how **OLS Dialog** can be used. The code for the example can be found in the SVN archive (in the package named no.uib.olsdialog.example).
 
 ### In Other Projects
 To use **OLS Dialog** in your project include **OLS Dialog** and the required libraries as dependencies, and make all classes that are going to access the OLS implement the OLSInputable interface (found in the package named no.uib.olsdialog). See the source code for details.
 
----
 ## Support 
 For questions or additional help, please contact the authors or, if appropriate, e-mail a support request to the PRIDE team at the EBI: `pride-support at ebi.ac.uk` (replace `at` with `@`).
 
----
 ## Maven Dependency 
 **OLS Dialog** is available for use in Maven projects:
+
 ~~~~
     <dependencies>
       <dependency>
@@ -99,4 +93,5 @@ For questions or additional help, please contact the authors or, if appropriate,
       </repository>
     </repositories>
 ~~~~
+
 Update the version number (XXX) to latest released version.
