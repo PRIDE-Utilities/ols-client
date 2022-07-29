@@ -2,7 +2,7 @@ ols-client
 ======================
   * [What is OLS Client?](#what-is-ols-client)
   * [Search Options](#search-options)
-  * [Using OLS Client](#using-ols-client)
+  * [Using OLS Dialog](#using-ols-dialog)
   * [Support](#support)
   * [Maven Dependency](#maven-dependency)
   
@@ -10,8 +10,10 @@ ols-client
  * Perez-Riverol Y, Uszkoreit J, Sanchez A, Ternent T, Del Toro N, Hermjakob H, Vizcaíno JA, Wang R. (2015). ms-data-core-api: An open-source, metadata-oriented library for computational proteomics. Bioinformatics. 2015 Apr 24. [PDF File](http://www.ncbi.nlm.nih.gov/pubmed/25910694) [Pubmed Record](http://www.ncbi.nlm.nih.gov/pubmed/25910694)
  * If you use **OLS Client** as part of a paper, please include the references above.
 
---
 ## What is OLS Client? 
+
+---
+
 **OLS Client** is a Java API to the [Ontology Lookup Service](http://www.ebi.ac.uk/ols/) allowing easy access to an extensive list of biomedical ontologies (see [supported ontologies](http://www.ebi.ac.uk/ols/) for a complete list).
 
 **OLS Client** is a part of the PRIDE Utilities including major projects like [ms-data-core-api](https://github.com/PRIDE-Utilities/ms-data-core-api), [pride-mod] (https://github.com/PRIDE-Utilities/pride-mod)
@@ -30,6 +32,7 @@ Five ways of searching the **OLS Dialog** is supported:
   * [Term Hierarchy Graph](#term-hierarchy-graph)
 
 ### Term Name Search 
+
 Term Name Search simply finds all terms having term names that (partially) match the insert search term. Insert the first letters of the name of the term to locate in the search field. Note that the search is in "real time". Meaning that a new search is started (and the result list updated) for every character typed. The number behind the search field is the number of currently matching terms.
 
 Note that in some cases a complete search is not performed until at least four characters have been inserted. If the wanted term is not found, make sure that at least four characters have been inserted.
@@ -40,7 +43,7 @@ When the wanted term has been found, select the term in the table and click the 
 
 For an example see the [Screenshots](#screenshots) section.
 
----
+
 ### Term ID Search 
 Term ID Search allows you the locate a given term and its details by inserting the term id, e.g., MOD:00425 or GO:0000269.
 
@@ -48,13 +51,11 @@ The results are displayed and selected in the same way as for results from a [Te
 
 For an example see the [Screenshots](#screenshots) section.
 
----
 ### PSI MOD Mass Search 
 PSI MOD Mass Search allows you to search the PSI-MOD ontology for specific modifications using the mass of the modification. There are four different mass types: DiffAvg and DiffMono corresponding to the average and mono mass of the mass change the modifications results in, and MassAvg and MassMono corresponding to the mass of the modified residue.
 
 Insert the mass, the mass accuracy and the mass type and click on "Search" to perform the search. The results are displayed and selected in the same way as for results from a [Term Name Search](#term-name-search).
 
----
 ### Browse Ontology
 Browse Ontology makes it possible to find the wanted term by browsing the selected ontology. The ontology is displayed using a tree structure where the relationships between the terms are highlighted. When selecting a term in the tree, details about the selected term is displayed in the "Term Details" section.
 
@@ -62,8 +63,10 @@ The results are selected and used in the same way as for results from a [Term Na
 
 For an example see the [Screenshots](#screenshots) section.
 
----
+
 ## Using OLS Dialog
+
+---
 
 ### Running the Jar File
 Running the jar file (either by double clicking it, or running it from the command line) starts a small example showing how **OLS Dialog** can be used. The code for the example can be found in the SVN archive (in the package named no.uib.olsdialog.example).
