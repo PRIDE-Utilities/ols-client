@@ -53,6 +53,41 @@ public class SearchResult implements ITerm {
     @JsonProperty("obo_definition_citation")
     private OboDefinitionCitation[] oboDefinitionCitation;
 
+    public Term toTerm() {
+        if (this.name == null) return null;
+        if (!this.obsolete) {
+            return new Term(
+                    this.getIri(),
+                    this.getName(),
+                    this.getDescription(),
+                    this.getShortName(),
+                    this.getOboId(),
+                    this.getOntologyName(),
+                    this.getScore(),
+                    this.getOntologyIri(),
+                    this.getIsDefiningOntology(),
+                    this.getOboDefinitionCitation(),
+                    this.getAnnotation());
+        } else {
+            return new ObsoleteTerm(
+                    this.getIri(),
+                    this.getName(),
+                    this.getDescription(),
+                    this.getShortName(),
+                    this.getOboId(),
+                    this.getOntologyName(),
+                    this.getScore(),
+                    this.getOntologyIri(),
+                    this.getIsDefiningOntology(),
+                    this.getOboDefinitionCitation(),
+                    this.getAnnotation(),
+                    this.isObsolete(),
+                    this.getTermReplacedBy()
+            );
+        }
+    }
+
+
     public String getId() {
         return id;
     }
@@ -165,7 +200,7 @@ public class SearchResult implements ITerm {
         this.oboDefinitionCitation = oboDefinitionCitation;
     }
 
-    public Identifier getGlobalId(){
-        return (oboId != null)?oboId:shortName;
+    public Identifier getGlobalId() {
+        return (oboId != null) ? oboId : shortName;
     }
 }

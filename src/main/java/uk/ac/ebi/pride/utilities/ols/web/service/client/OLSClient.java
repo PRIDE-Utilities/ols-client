@@ -13,6 +13,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -159,7 +160,7 @@ public class OLSClient implements Client {
      */
     public Term getTermByOBOId(String termOBOId, String ontologyId) throws RestClientException {
 
-        String query = String.format("obo_id=%s",termOBOId);
+        String query = String.format("obo_id=%s", termOBOId);
 
         log.debug(query);
 
@@ -208,7 +209,7 @@ public class OLSClient implements Client {
      */
     public Term getTermByIRIId(String iriId, String ontologyId) throws RestClientException {
 
-        String query = String.format("iri=%s",iriId);
+        String query = String.format("iri=%s", iriId);
         log.debug(query);
         URI uri = encodeURL("/api/ontologies/" + ontologyId + "/terms", query);
         TermQuery result = this.restTemplate.getForObject(uri, TermQuery.class);
@@ -269,9 +270,9 @@ public class OLSClient implements Client {
 
     public Ontology getOntologyFromId(URI id) {
         List<Ontology> ontologyList = getOntologies();
-        for (Ontology ontology : ontologyList){
+        for (Ontology ontology : ontologyList) {
             log.debug(ontology.getConfig().getId());
-            if (ontology.getConfig().getId().equals(id.toString())){
+            if (ontology.getConfig().getId().equals(id.toString())) {
                 return ontology;
             }
         }
@@ -352,7 +353,7 @@ public class OLSClient implements Client {
         String query = String.format("q=*%s*&" + getFieldList() + "&rows=%s&start=%s", identifier, Constants.SEARCH_PAGE_SIZE, page);
         if (ontologyID != null && !ontologyID.isEmpty())
             query = String.format("q=%s&exact=on&" + getFieldList() + "&rows=%s&start=%s&ontology=%s", identifier, Constants.SEARCH_PAGE_SIZE, page, ontologyID);
-        log.debug(query); 
+        log.debug(query);
         URI uri = encodeURL("/api/search", query);
         return this.restTemplate.getForObject(uri, SearchQuery.class);
     }
@@ -491,7 +492,6 @@ public class OLSClient implements Client {
         }
         return terms;
     }
-
 
     public List<Term> getTermsByName(String partialName, String ontologyID, boolean reverseKeyOrder) {
         return getTermsByName(partialName, ontologyID, reverseKeyOrder, null);
@@ -680,19 +680,8 @@ public class OLSClient implements Client {
                 }
             }
         }
-        for (SearchResult term : terms)
-            if (term.getName() != null) {
-                termResults.add(new Term(term.getIri(), term.getName(), term.getDescription(),
-                        term.getShortName(),
-                        term.getOboId(),
-                        term.getOntologyName(),
-                        term.getScore(),
-                        term.getOntologyIri(),
-                        term.getIsDefiningOntology(),
-                        term.getOboDefinitionCitation()));
-            }
 
-        return termResults;
+        return terms.stream().map(SearchResult::toTerm).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     /**
@@ -710,32 +699,8 @@ public class OLSClient implements Client {
         if (currentTermQuery != null && currentTermQuery.getResponse() != null && currentTermQuery.getResponse().getSearchResults() != null) {
             terms.addAll(Arrays.asList(currentTermQuery.getResponse().getSearchResults()));
         }
-        Term term = null;
-        for (SearchResult term1 : terms)
-            if (term1.getName() != null) {
-                if (term1.isObsolete()) {
-                    term = new ObsoleteTerm(term1.getIri(), term1.getName(), term1.getDescription(),
-                            term1.getShortName(),
-                            term1.getOboId(),
-                            term1.getOntologyName(),
-                            term1.getScore(),
-                            term1.getOntologyIri(),
-                            term1.getIsDefiningOntology(),
-                            term1.getOboDefinitionCitation(),
-                            term1.getAnnotation(),
-                            true, term1.getTermReplacedBy());
-                } else {
-                    term = new Term(term1.getIri(), term1.getName(), term1.getDescription(),
-                            term1.getShortName(),
-                            term1.getOboId(),
-                            term1.getOntologyName(),
-                            term1.getScore(),
-                            term1.getOntologyIri(),
-                            term1.getIsDefiningOntology(),
-                            term1.getOboDefinitionCitation(),
-                            term1.getAnnotation());
-                }
-            }
+
+        Term term = terms.stream().map(SearchResult::toTerm).findFirst().orElse(null);
 
         if (ontology != null && !ontology.isEmpty() && term != null && term.getOntologyName() != null) {
             if (!term.getOntologyName().equalsIgnoreCase(ontology)) {
@@ -760,26 +725,12 @@ public class OLSClient implements Client {
         if (currentTermQuery != null && currentTermQuery.getResponse() != null && currentTermQuery.getResponse().getSearchResults() != null) {
             terms.addAll(Arrays.asList(currentTermQuery.getResponse().getSearchResults()));
         }
-        ObsoleteTerm term = null;
-        for (SearchResult term1 : terms) {
-            if (term1.getName() != null) {
-                if (term1.isObsolete()) {
-                    if (term1.getIsDefiningOntology()) {
-                        return new ObsoleteTerm(term1.getIri(), term1.getName(), term1.getDescription(),
-                                term1.getShortName(),
-                                term1.getOboId(),
-                                term1.getOntologyName(),
-                                term1.getScore(),
-                                term1.getOntologyIri(),
-                                term1.getIsDefiningOntology(),
-                                term1.getOboDefinitionCitation(),
-                                term1.getAnnotation(),
-                                true, term1.getTermReplacedBy());
-                    }
-                }
-            }
-        }
-        return null;
+
+        return (ObsoleteTerm) terms.stream()
+                .filter(SearchResult::isObsolete)
+                .filter(SearchResult::getIsDefiningOntology)
+                .map(SearchResult::toTerm)
+                .findFirst().orElse(null);
     }
 
     /**
