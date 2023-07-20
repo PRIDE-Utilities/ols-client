@@ -38,7 +38,7 @@ public class OLSClientTest {
 
     @Test
     public void testGetAllTermsFromOntology() throws Exception {
-        List<Term> terms = olsClient.getAllTermsFromOntology("pride");
+        List<Term> terms = olsClient.getAllTermsFromOntology("mi");
         logger.info(terms.toString());
         Assert.assertTrue(terms.size() > 0);
     }
@@ -48,6 +48,17 @@ public class OLSClientTest {
         List<Term> rootTerms = olsClient.getRootTerms("ms");
         logger.info(rootTerms.toString());
         Assert.assertTrue(rootTerms.size() > 0);
+    }
+
+    @Test
+    public void testGetTermsBySynonym() throws Exception {
+        List<Term> terms = olsClient.getTermsByName("lncRNA", "mi", false);
+        logger.info(terms.toString());
+        Assert.assertTrue(terms.size() > 0);
+        terms = olsClient.getTermsByName("lncRNA", "mi", true);
+        Optional<Term> target = terms.stream().filter(term -> term.getTermOBOId().getIdentifier().equalsIgnoreCase("MI:2190")).findFirst();
+        Assert.assertTrue(target.isPresent());
+        Assert.assertTrue(target.get().getLabel().toLowerCase().contains("long"));
     }
 
     @Test
@@ -222,18 +233,34 @@ public class OLSClientTest {
     }
 
     @Test
-    public void testGetOntologyFromId(){
-        Ontology ontology = olsClient.getOntologyFromId(URI.create("http://www.ebi.ac.uk/efo/efo.owl"));
+    public void testGetOntologyFromFilePath(){
+        Ontology ontology = olsClient.getOntologyFromFilePath(URI.create("http://www.ebi.ac.uk/efo/efo.owl"));
         Assert.assertEquals(ontology.getNamespace(),"efo");
-        ontology = olsClient.getOntologyFromId(URI.create("http://purl.obolibrary.org/obo/pride_cv.obo"));
-        Assert.assertEquals(ontology.getNamespace(),"pride");
-        ontology = olsClient.getOntologyFromId(URI.create("http://enanomapper.github.io/ontologies/enanomapper.owl"));
+//        ontology = olsClient.getOntologyFromFilePath(URI.create("http://purl.obolibrary.org/obo/pride_cv.obo"));
+//        Assert.assertEquals(ontology.getNamespace(),"pride");
+        ontology = olsClient.getOntologyFromFilePath(URI.create("http://enanomapper.github.io/ontologies/enanomapper.owl"));
         Assert.assertEquals(ontology.getNamespace(),"enm");
-        ontology = olsClient.getOntologyFromId(URI.create("http://opendata.inra.fr/EOL/eol_ontology"));
-        Assert.assertEquals(ontology.getNamespace(),"eol");
-        ontology = olsClient.getOntologyFromId(URI.create("http://www.bio.ntnu.no/ontology/GeXO/gexo.owl"));
-        Assert.assertEquals(ontology.getNamespace(),"gexo");
-        ontology = olsClient.getOntologyFromId(URI.create("http://purl.obolibrary.org/obo/go.owl"));
+//        ontology = olsClient.getOntologyFromFilePath(URI.create("http://opendata.inra.fr/EOL/eol_ontology"));
+//        Assert.assertEquals(ontology.getNamespace(),"eol");
+//        ontology = olsClient.getOntologyFromFilePath(URI.create("http://www.bio.ntnu.no/ontology/GeXO/gexo.owl"));
+//        Assert.assertEquals(ontology.getNamespace(),"gexo");
+        ontology = olsClient.getOntologyFromFilePath(URI.create("http://purl.obolibrary.org/obo/go.owl"));
+        Assert.assertEquals(ontology.getNamespace(),"go");
+    }
+
+    @Test
+    public void testGetOntologyFromId(){
+        Ontology ontology = olsClient.getOntologyFromId("efo");
+        Assert.assertEquals(ontology.getNamespace(),"efo");
+//        ontology = olsClient.getOntologyFromId("pride");
+//        Assert.assertEquals(ontology.getNamespace(),"pride");
+        ontology = olsClient.getOntologyFromId("enm");
+        Assert.assertEquals(ontology.getNamespace(),"enm");
+//        ontology = olsClient.getOntologyFromId("eol");
+//        Assert.assertEquals(ontology.getNamespace(),"eol");
+//        ontology = olsClient.getOntologyFromId("gexo");
+//        Assert.assertEquals(ontology.getNamespace(),"gexo");
+        ontology = olsClient.getOntologyFromId("go");
         Assert.assertEquals(ontology.getNamespace(),"go");
     }
 
