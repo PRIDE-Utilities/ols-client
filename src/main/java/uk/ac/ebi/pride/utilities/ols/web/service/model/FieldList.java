@@ -13,12 +13,12 @@ public class FieldList {
     private String ontologyPrefix;
     private String description;
     private String type;
-    private String synonym;
+    private String synonyms;
     private String score;
     private String ontologyIri;
     private String isDefiningOntology;
 
-    private FieldList(String iri, String label, String shortForm, String oboId, String ontologyName, String ontologyPrefix, String description, String type, String synonym, String score, String ontologyIri, String isDefiningOntology) {
+    private FieldList(String iri, String label, String shortForm, String oboId, String ontologyName, String ontologyPrefix, String description, String type, String synonyms, String score, String ontologyIri, String isDefiningOntology) {
         this.iri = iri;
         this.label = label;
         this.shortForm = shortForm;
@@ -27,7 +27,7 @@ public class FieldList {
         this.ontologyPrefix = ontologyPrefix;
         this.description = description;
         this.type = type;
-        this.synonym = synonym;
+        this.synonyms = synonyms;
         this.score = score;
         this.ontologyIri = ontologyIri;
         this.isDefiningOntology = isDefiningOntology;
@@ -65,8 +65,8 @@ public class FieldList {
         return type;
     }
 
-    private String getSynonym() {
-        return synonym;
+    private String getSynonyms() {
+        return synonyms;
     }
 
     private String getScore() {
@@ -100,8 +100,8 @@ public class FieldList {
             fieldList.append(getDescription()).append(",");
         if (getType() != null)
             fieldList.append(getType()).append(",");
-        if (getSynonym() != null)
-            fieldList.append(getSynonym()).append(",");
+        if (getSynonyms() != null)
+            fieldList.append(getSynonyms()).append(",");
         if (getScore() != null)
             fieldList.append(getScore()).append(",");
         if (getOntologyIri() != null)
@@ -122,7 +122,7 @@ public class FieldList {
         private String ontologyPrefix;
         private String description;
         private String type;
-        private String synonym;
+        private String synonyms;
         private String score;
         private String ontologyIri;
         private String isDefiningOntology;
@@ -131,7 +131,7 @@ public class FieldList {
         }
 
         public FieldList build(){
-            return new FieldList(iri, label, shortForm, oboId, ontologyName, ontologyPrefix, description, type, synonym, score, ontologyIri, isDefiningOntology);
+            return new FieldList(iri, label, shortForm, oboId, ontologyName, ontologyPrefix, description, type, synonyms, score, ontologyIri, isDefiningOntology);
         }
         public FieldListBuilder setIri() {
             this.iri = "iri";
@@ -174,7 +174,7 @@ public class FieldList {
         }
 
         public FieldListBuilder setSynonyms() {
-            this.synonym = "synonym";
+            this.synonyms = "synonyms";
             return this;
         }
 

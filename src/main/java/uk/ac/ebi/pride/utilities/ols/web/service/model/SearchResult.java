@@ -3,10 +3,6 @@ package uk.ac.ebi.pride.utilities.ols.web.service.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-
 /**
  * SearchResult contains summary term information after the query to the ols service.
  *
@@ -22,13 +18,13 @@ public class SearchResult implements ITerm {
     private Identifier iri;
 
     @JsonProperty("short_form")
-    private Identifier[] shortName;
+    private Identifier shortName;
 
     @JsonProperty("obo_id")
-    private Identifier[] oboId;
+    private Identifier oboId;
 
     @JsonProperty("label")
-    private String[] name;
+    private String name;
 
     @JsonProperty("description")
     private String[] description;
@@ -74,40 +70,28 @@ public class SearchResult implements ITerm {
     }
 
     public Identifier getShortName() {
-        return shortName[0];
+        return shortName;
     }
 
-    public void setShortName(List<String> shortName) {
-        this.shortName = shortName.stream().map(s -> new Identifier(s, Identifier.IdentifierType.OWL)).toArray(Identifier[]::new);
+    public void setShortName(String shortName) {
+        this.shortName = new Identifier(shortName, Identifier.IdentifierType.OWL);
     }
-
-//    public void setShortName(String shortName) {
-//        this.shortName = new Identifier[]{new Identifier(shortName, Identifier.IdentifierType.OWL)};
-//    }
 
     public Identifier getOboId() {
-        return oboId[0];
+        return oboId;
     }
 
-    public void setOboId(List<String> oboId) {
-        this.oboId = oboId.stream().map(s -> new Identifier(s, Identifier.IdentifierType.OBO)).toArray(Identifier[]::new);
+    public void setOboId(String oboId) {
+        this.oboId = new Identifier(oboId, Identifier.IdentifierType.OBO);
     }
-
-//    public void setOboId(String oboId) {
-//        this.oboId = new Identifier[]{new Identifier(oboId, Identifier.IdentifierType.OBO)};
-//    }
 
     public String getName() {
-        return name[0];
+        return name;
     }
 
-    public void setName(String[] name) {
+    public void setName(String name) {
         this.name = name;
     }
-
-//    public void setName(String name) {
-//        this.name = new String[]{name};
-//    }
 
     public String[] getDescription() {
         return description;
@@ -181,7 +165,7 @@ public class SearchResult implements ITerm {
         this.oboDefinitionCitation = oboDefinitionCitation;
     }
 
-    public Identifier getGlobalId() {
-        return (oboId != null) ? oboId[0] : shortName[0];
+    public Identifier getGlobalId(){
+        return (oboId != null)?oboId:shortName;
     }
 }
