@@ -72,7 +72,7 @@ public class SearchResult implements ITerm {
     }
 
     public Identifier getShortName() {
-        return shortName[0];
+        return first(shortName);
     }
 
     public void setShortName(List<String> shortName) {
@@ -80,7 +80,7 @@ public class SearchResult implements ITerm {
     }
 
     public Identifier getOboId() {
-        return oboId[0];
+        return first(oboId);
     }
 
     public void setOboId(List<String> oboId) {
@@ -88,7 +88,7 @@ public class SearchResult implements ITerm {
     }
 
     public String getName() {
-        return name.length > 0 ? name[0] : null;
+        return first(name);
     }
 
     public void setName(String[] name) {
@@ -168,6 +168,11 @@ public class SearchResult implements ITerm {
     }
 
     public Identifier getGlobalId() {
-        return (oboId != null) ? oboId[0] : shortName[0];
+        return getOboId() != null ? getOboId() : getShortName();
     }
+
+    private static <T> T first(T[] array) {
+        return array != null && array.length >= 1 ? array[0] : null;
+    }
+
 }
