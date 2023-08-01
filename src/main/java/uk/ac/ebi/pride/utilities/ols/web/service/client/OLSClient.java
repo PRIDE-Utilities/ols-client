@@ -1,5 +1,6 @@
 package uk.ac.ebi.pride.utilities.ols.web.service.client;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -9,10 +10,8 @@ import uk.ac.ebi.pride.utilities.ols.web.service.model.*;
 import uk.ac.ebi.pride.utilities.ols.web.service.utils.Constants;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLDecoder;
 import java.util.*;
 
 
@@ -101,7 +100,9 @@ public class OLSClient implements Client {
      */
     public OLSClient(AbstractOLSWsConfig config) {
         this.config = config;
-        this.mapper = new ObjectMapper();
+        this.mapper = new ObjectMapper()
+                .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+
 //        this.restTemplate = new RestTemplate(getClientHttpRequestFactory());
         this.searchPageSize = Constants.SEARCH_PAGE_SIZE;
         this.searchPageNum = -1;
@@ -397,6 +398,8 @@ public class OLSClient implements Client {
                     } else if (xref.getDescription() != null && !xref.getDescription().isEmpty()) {
                         xrefs.put(xref.getDatabase(), xref.getDescription());
                     }
+                } else if (xref.getId() != null && !xref.getId().isEmpty() && xref.getDescription() != null && !xref.getDescription().isEmpty()) {
+                    xrefs.put(xref.getId(), xref.getDescription());
                 }
             }
         }
@@ -669,7 +672,7 @@ public class OLSClient implements Client {
 
         int pageNum = getSearchPageNum();
         if (pageNum < 0) {
-            pageNum = new Integer(currentTermQuery.getResponse().getNumFound() / pageSize);
+            pageNum = currentTermQuery.getResponse().getNumFound() / pageSize;
         }
 
         if (currentTermQuery != null && currentTermQuery.getResponse() != null && currentTermQuery.getResponse().getSearchResults() != null) {
@@ -965,8 +968,7 @@ public class OLSClient implements Client {
     private List<Term> getTermChildren(Href hrefChildren, int distance) {
         if (distance == 0)
             return new ArrayList<>();
-        List<Term> childTerms = new ArrayList<>();
-        childTerms.addAll(getTermQuery(hrefChildren));
+        List<Term> childTerms = new ArrayList<>(getTermQuery(hrefChildren));
         distance--;
         List<Term> currentChild = new ArrayList<>();
         for (Term child : childTerms)

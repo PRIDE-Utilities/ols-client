@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 /**
  * SearchResult contains summary term information after the query to the ols service.
@@ -81,10 +79,6 @@ public class SearchResult implements ITerm {
         this.shortName = shortName.stream().map(s -> new Identifier(s, Identifier.IdentifierType.OWL)).toArray(Identifier[]::new);
     }
 
-//    public void setShortName(String shortName) {
-//        this.shortName = new Identifier[]{new Identifier(shortName, Identifier.IdentifierType.OWL)};
-//    }
-
     public Identifier getOboId() {
         return oboId[0];
     }
@@ -93,21 +87,13 @@ public class SearchResult implements ITerm {
         this.oboId = oboId.stream().map(s -> new Identifier(s, Identifier.IdentifierType.OBO)).toArray(Identifier[]::new);
     }
 
-//    public void setOboId(String oboId) {
-//        this.oboId = new Identifier[]{new Identifier(oboId, Identifier.IdentifierType.OBO)};
-//    }
-
     public String getName() {
-        return name[0];
+        return name.length > 0 ? name[0] : null;
     }
 
     public void setName(String[] name) {
         this.name = name;
     }
-
-//    public void setName(String name) {
-//        this.name = new String[]{name};
-//    }
 
     public String[] getDescription() {
         return description;
