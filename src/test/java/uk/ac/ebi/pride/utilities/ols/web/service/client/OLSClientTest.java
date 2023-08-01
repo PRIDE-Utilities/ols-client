@@ -211,8 +211,8 @@ public class OLSClientTest {
         }
         terms = olsClient.getExactTermsByName(termName, ontologyName);
         Assert.assertNotNull(terms);
-        Assert.assertTrue(!terms.isEmpty());
-        Assert.assertTrue(terms.size() == 1);
+        Assert.assertFalse(terms.isEmpty());
+        Assert.assertEquals(1, terms.size());
         Assert.assertEquals(terms.get(0).getIri().getIdentifier(),"http://purl.obolibrary.org/obo/UBERON_0002107");
     }
 
