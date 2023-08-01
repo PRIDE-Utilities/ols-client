@@ -3,7 +3,7 @@ package uk.ac.ebi.pride.utilities.ols.web.service.model;
 /**
  * @author olgavrou
  */
-public class FieldList {
+public class FieldList implements Joinable {
 
     private String iri;
     private String label;
@@ -77,41 +77,16 @@ public class FieldList {
         return ontologyIri;
     }
 
-    private String getIsDefiningOntology() {return isDefiningOntology;}
+    private String getIsDefiningOntology() {
+        return isDefiningOntology;
+    }
 
 
     @Override
     public String toString() {
-        StringBuilder fieldList = new StringBuilder("fieldList=");
-
-        if (getIri() != null)
-            fieldList.append(getIri()).append(",");
-        if (getLabel() != null)
-            fieldList.append(getLabel()).append(",");
-        if (getShortForm() != null)
-            fieldList.append(getShortForm()).append(",");
-        if (getOboId() != null)
-            fieldList.append(getOboId()).append(",");
-        if (getOntologyName() != null)
-            fieldList.append(getOntologyName()).append(",");
-        if (getOntologyPrefix() != null)
-            fieldList.append(getOntologyPrefix()).append(",");
-        if (getDescription() != null)
-            fieldList.append(getDescription()).append(",");
-        if (getType() != null)
-            fieldList.append(getType()).append(",");
-        if (getSynonym() != null)
-            fieldList.append(getSynonym()).append(",");
-        if (getScore() != null)
-            fieldList.append(getScore()).append(",");
-        if (getOntologyIri() != null)
-            fieldList.append(getOntologyIri()).append(",");
-        if (getIsDefiningOntology() != null){
-            fieldList.append(getIsDefiningOntology()).append(",");
-        }
-
-        return fieldList.toString();
+        return "fieldList=" + this.join();
     }
+
     public static class FieldListBuilder {
 
         private String iri;
@@ -130,9 +105,10 @@ public class FieldList {
         public FieldListBuilder() {
         }
 
-        public FieldList build(){
+        public FieldList build() {
             return new FieldList(iri, label, shortForm, oboId, ontologyName, ontologyPrefix, description, type, synonym, score, ontologyIri, isDefiningOntology);
         }
+
         public FieldListBuilder setIri() {
             this.iri = "iri";
             return this;
@@ -188,7 +164,7 @@ public class FieldList {
             return this;
         }
 
-        public FieldListBuilder setIsDefiningOntology(){
+        public FieldListBuilder setIsDefiningOntology() {
             this.isDefiningOntology = "is_defining_ontology";
             return this;
         }
