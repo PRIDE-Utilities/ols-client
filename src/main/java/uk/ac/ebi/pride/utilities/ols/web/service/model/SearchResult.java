@@ -3,6 +3,8 @@ package uk.ac.ebi.pride.utilities.ols.web.service.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
+
 /**
  * SearchResult contains summary term information after the query to the ols service.
  *
@@ -18,13 +20,13 @@ public class SearchResult implements ITerm {
     private Identifier iri;
 
     @JsonProperty("short_form")
-    private Identifier shortName;
+    private Identifier[] shortName;
 
     @JsonProperty("obo_id")
-    private Identifier oboId;
+    private Identifier[] oboId;
 
     @JsonProperty("label")
-    private String name;
+    private String[] name;
 
     @JsonProperty("description")
     private String[] description;
@@ -105,26 +107,26 @@ public class SearchResult implements ITerm {
     }
 
     public Identifier getShortName() {
-        return shortName;
+        return first(shortName);
     }
 
-    public void setShortName(String shortName) {
-        this.shortName = new Identifier(shortName, Identifier.IdentifierType.OWL);
+    public void setShortName(List<String> shortName) {
+        this.shortName = shortName.stream().map(s -> new Identifier(s, Identifier.IdentifierType.OWL)).toArray(Identifier[]::new);
     }
 
     public Identifier getOboId() {
-        return oboId;
+        return first(oboId);
     }
 
-    public void setOboId(String oboId) {
-        this.oboId = new Identifier(oboId, Identifier.IdentifierType.OBO);
+    public void setOboId(List<String> oboId) {
+        this.oboId = oboId.stream().map(s -> new Identifier(s, Identifier.IdentifierType.OBO)).toArray(Identifier[]::new);
     }
 
     public String getName() {
-        return name;
+        return first(name);
     }
 
-    public void setName(String name) {
+    public void setName(String[] name) {
         this.name = name;
     }
 
@@ -201,6 +203,11 @@ public class SearchResult implements ITerm {
     }
 
     public Identifier getGlobalId() {
-        return (oboId != null) ? oboId : shortName;
+        return getOboId() != null ? getOboId() : getShortName();
     }
+
+    private static <T> T first(T[] array) {
+        return array != null && array.length >= 1 ? array[0] : null;
+    }
+
 }

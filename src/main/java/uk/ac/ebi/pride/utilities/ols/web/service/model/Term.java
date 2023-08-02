@@ -136,6 +136,15 @@ public class Term implements Comparable, ITerm {
         this.synonyms = synonyms;
     }
 
+    /**
+     * Support synonym/synonyms name which differ between the different ensdoints
+     * @param synonym
+     */
+    @JsonProperty("synonym")
+    public void setSynonym(String[] synonym) {
+        this.synonyms = synonym;
+    }
+
     public String getOntologyName() {
         return ontologyName;
     }
