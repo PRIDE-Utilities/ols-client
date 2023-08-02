@@ -10,6 +10,6 @@ public class Constants {
     public static final int TERM_PAGE_SIZE = 1000;
     public static final String REFERENCE_SEPARATOR = ":";
     public static final String OLS_PROTOCOL = "https";
-    public static final String OLS_SERVER = "www.ebi.ac.uk/ols/";
+    public static final String OLS_SERVER = "www.ebi.ac.uk/ols4/";
     public static final String OLS_SERVER_DEV = "wwwdev.ebi.ac.uk/ols/";
 }
