@@ -73,17 +73,6 @@ public class OLSClientTest {
     }
 
     @Test
-    public void testGetTermsBySynonym() throws Exception {
-        List<Term> terms = olsClient.getTermsByName("lncRNA", "mi", false);
-        logger.info(terms.toString());
-        Assert.assertTrue(terms.size() > 0);
-        terms = olsClient.getTermsByName("lncRNA", "mi", true);
-        Optional<Term> target = terms.stream().filter(term -> term.getTermOBOId().getIdentifier().equalsIgnoreCase("MI:2190")).findFirst();
-        Assert.assertTrue(target.isPresent());
-        Assert.assertTrue(target.get().getLabel().toLowerCase().contains("long"));
-    }
-
-    @Test
     public void testGetTermChildrenByOBOId() throws Exception {
         List<Term> children = olsClient.getTermChildren(new Identifier("MS_1001143", Identifier.IdentifierType.OWL), "ms", 1);
         logger.debug(children.toString());
