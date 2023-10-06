@@ -3,7 +3,7 @@ package uk.ac.ebi.pride.utilities.ols.web.service.model;
 /**
  * @author olgavrou
  */
-public class QueryFields {
+public class QueryFields implements Joinable {
 
     private String label;
     private String synonym;
@@ -61,26 +61,7 @@ public class QueryFields {
 
     @Override
     public String toString() {
-        StringBuilder queryFields = new StringBuilder("queryFields=");
-
-        if (getIri() != null)
-            queryFields.append(getIri()).append(",");
-        if (getLabel() != null)
-            queryFields.append(getLabel()).append(",");
-        if (getShortForm() != null)
-            queryFields.append(getShortForm()).append(",");
-        if (getOboId() != null)
-            queryFields.append(getOboId()).append(",");
-        if (getDescription() != null)
-            queryFields.append(getDescription()).append(",");
-        if (getAnnotations() != null)
-            queryFields.append(getAnnotations()).append(",");
-        if (getSynonym() != null)
-            queryFields.append(getSynonym()).append(",");
-        if (getLogicalDescription() != null)
-            queryFields.append(getLogicalDescription()).append(",");
-
-        return queryFields.toString();
+        return "queryFields=" + this.join();
     }
     public static class QueryFieldBuilder {
 
@@ -96,7 +77,7 @@ public class QueryFields {
         public QueryFieldBuilder() {
         }
 
-        public QueryFields build(){
+        public QueryFields build() {
             return new QueryFields(iri, label, shortForm, oboId, description, annotations, synonym, logicalDescription);
         }
         public QueryFieldBuilder setIri() {

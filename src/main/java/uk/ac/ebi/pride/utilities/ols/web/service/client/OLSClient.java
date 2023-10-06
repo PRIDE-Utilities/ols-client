@@ -1,18 +1,19 @@
 package uk.ac.ebi.pride.utilities.ols.web.service.client;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 import uk.ac.ebi.pride.utilities.ols.web.service.config.AbstractOLSWsConfig;
 import uk.ac.ebi.pride.utilities.ols.web.service.model.*;
 import uk.ac.ebi.pride.utilities.ols.web.service.utils.Constants;
 
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLDecoder;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -24,7 +25,8 @@ import java.util.*;
 @Slf4j
 public class OLSClient implements Client {
 
-    private RestTemplate restTemplate;
+    private ObjectMapper mapper;
+
     private AbstractOLSWsConfig config;
 
     private String queryField;
@@ -99,8 +101,9 @@ public class OLSClient implements Client {
      */
     public OLSClient(AbstractOLSWsConfig config) {
         this.config = config;
-        this.restTemplate = new RestTemplate();
-        this.restTemplate = new RestTemplate();
+        this.mapper = new ObjectMapper()
+                .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+
 //        this.restTemplate = new RestTemplate(getClientHttpRequestFactory());
         this.searchPageSize = Constants.SEARCH_PAGE_SIZE;
         this.searchPageNum = -1;
@@ -112,14 +115,6 @@ public class OLSClient implements Client {
 //        return clientHttpRequestFactory;
 //    }
 
-
-    public RestTemplate getRestTemplate() {
-        return restTemplate;
-    }
-
-    public void setRestTemplate(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
 
     public AbstractOLSWsConfig getConfig() {
         return config;
@@ -159,12 +154,12 @@ public class OLSClient implements Client {
      */
     public Term getTermByOBOId(String termOBOId, String ontologyId) throws RestClientException {
 
-        String query = String.format("obo_id=%s",termOBOId);
+        String query = String.format("obo_id=%s", termOBOId);
 
         log.debug(query);
 
         URI uri = encodeURL("/api/ontologies/" + ontologyId + "/terms", query);
-        TermQuery result = this.restTemplate.getForObject(uri, TermQuery.class);
+        TermQuery result = getForObject(uri, TermQuery.class);
 
         if (result != null && result.getTerms() != null && result.getTerms().length == 1) {
             return result.getTerms()[0];
@@ -189,7 +184,7 @@ public class OLSClient implements Client {
         log.debug(query);
 
         URI uri = encodeURL("/api/ontologies/" + ontologyId + "/terms", query);
-        TermQuery result = this.restTemplate.getForObject(uri, TermQuery.class);
+        TermQuery result = getForObject(uri, TermQuery.class);
 
         if (result != null && result.getTerms() != null && result.getTerms().length == 1) {
             return result.getTerms()[0];
@@ -208,10 +203,10 @@ public class OLSClient implements Client {
      */
     public Term getTermByIRIId(String iriId, String ontologyId) throws RestClientException {
 
-        String query = String.format("iri=%s",iriId);
+        String query = String.format("iri=%s", iriId);
         log.debug(query);
         URI uri = encodeURL("/api/ontologies/" + ontologyId + "/terms", query);
-        TermQuery result = this.restTemplate.getForObject(uri, TermQuery.class);
+        TermQuery result = getForObject(uri, TermQuery.class);
 
         if (result != null && result.getTerms() != null && result.getTerms().length == 1) {
             return result.getTerms()[0];
@@ -267,11 +262,26 @@ public class OLSClient implements Client {
         return ontologies;
     }
 
+    public Ontology getOntologyFromId(String id) {
+        return getOntologies().stream().filter(ontology -> ontology.getId().equals(id)).findAny().orElse(null);
+    }
+
+    /**
+     * @param id
+     * @return {@link Ontology}
+     * @deprecated Former id is now FilePath.<br> To use the same input, use {@link OLSClient#getOntologyFromFilePath(URI filePath)}.<br> To use new id definition (short letter code), use  {@link OLSClient#getOntologyFromId(String id)}
+     */
+    @Deprecated
     public Ontology getOntologyFromId(URI id) {
+        return getOntologyFromFilePath(id);
+    }
+
+    public Ontology getOntologyFromFilePath(URI filePath) {
         List<Ontology> ontologyList = getOntologies();
-        for (Ontology ontology : ontologyList){
-            log.debug(ontology.getConfig().getId());
-            if (ontology.getConfig().getId().equals(id.toString())){
+        for (Ontology ontology : ontologyList) {
+            String fileLocation = ontology.getConfig().getFileLocation();
+            log.debug(fileLocation);
+            if (fileLocation != null && fileLocation.equals(filePath.toString())) {
                 return ontology;
             }
         }
@@ -352,9 +362,9 @@ public class OLSClient implements Client {
         String query = String.format("q=*%s*&" + getFieldList() + "&rows=%s&start=%s", identifier, Constants.SEARCH_PAGE_SIZE, page);
         if (ontologyID != null && !ontologyID.isEmpty())
             query = String.format("q=%s&exact=on&" + getFieldList() + "&rows=%s&start=%s&ontology=%s", identifier, Constants.SEARCH_PAGE_SIZE, page, ontologyID);
-        log.debug(query); 
+        log.debug(query);
         URI uri = encodeURL("/api/search", query);
-        return this.restTemplate.getForObject(uri, SearchQuery.class);
+        return getForObject(uri, SearchQuery.class);
     }
 
 
@@ -389,6 +399,8 @@ public class OLSClient implements Client {
                     } else if (xref.getDescription() != null && !xref.getDescription().isEmpty()) {
                         xrefs.put(xref.getDatabase(), xref.getDescription());
                     }
+                } else if (xref.getId() != null && !xref.getId().isEmpty() && xref.getDescription() != null && !xref.getDescription().isEmpty()) {
+                    xrefs.put(xref.getId(), xref.getDescription());
                 }
             }
         }
@@ -412,7 +424,7 @@ public class OLSClient implements Client {
                 page, Constants.ONTOLOGY_PAGE_SIZE);
         log.debug(query);
         URI uri = encodeURL("/api/ontologies", query);
-        return this.restTemplate.getForObject(uri, OntologyQuery.class);
+        return getForObject(uri, OntologyQuery.class);
     }
 
     /**
@@ -452,7 +464,7 @@ public class OLSClient implements Client {
         log.debug(query);
 
         URI uri = encodeURL("/api/ontologies/" + ontologyID + "/terms/roots/", query);
-        return this.restTemplate.getForObject(uri, TermQuery.class);
+        return getForObject(uri, TermQuery.class);
     }
 
     private TermQuery getTermQuery(int page, String ontologyID) {
@@ -463,7 +475,7 @@ public class OLSClient implements Client {
         log.debug(query);
 
         URI uri = encodeURL("/api/ontologies/" + ontologyID + "/terms", query);
-        return this.restTemplate.getForObject(uri, TermQuery.class);
+        return getForObject(uri, TermQuery.class);
     }
 
     /**
@@ -491,7 +503,6 @@ public class OLSClient implements Client {
         }
         return terms;
     }
-
 
     public List<Term> getTermsByName(String partialName, String ontologyID, boolean reverseKeyOrder) {
         return getTermsByName(partialName, ontologyID, reverseKeyOrder, null);
@@ -661,7 +672,7 @@ public class OLSClient implements Client {
 
         int pageNum = getSearchPageNum();
         if (pageNum < 0) {
-            pageNum = new Integer(currentTermQuery.getResponse().getNumFound() / pageSize);
+            pageNum = currentTermQuery.getResponse().getNumFound() / pageSize;
         }
 
         if (currentTermQuery != null && currentTermQuery.getResponse() != null && currentTermQuery.getResponse().getSearchResults() != null) {
@@ -680,19 +691,8 @@ public class OLSClient implements Client {
                 }
             }
         }
-        for (SearchResult term : terms)
-            if (term.getName() != null) {
-                termResults.add(new Term(term.getIri(), term.getName(), term.getDescription(),
-                        term.getShortName(),
-                        term.getOboId(),
-                        term.getOntologyName(),
-                        term.getScore(),
-                        term.getOntologyIri(),
-                        term.getIsDefiningOntology(),
-                        term.getOboDefinitionCitation()));
-            }
 
-        return termResults;
+        return terms.stream().map(SearchResult::toTerm).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     /**
@@ -710,32 +710,8 @@ public class OLSClient implements Client {
         if (currentTermQuery != null && currentTermQuery.getResponse() != null && currentTermQuery.getResponse().getSearchResults() != null) {
             terms.addAll(Arrays.asList(currentTermQuery.getResponse().getSearchResults()));
         }
-        Term term = null;
-        for (SearchResult term1 : terms)
-            if (term1.getName() != null) {
-                if (term1.isObsolete()) {
-                    term = new ObsoleteTerm(term1.getIri(), term1.getName(), term1.getDescription(),
-                            term1.getShortName(),
-                            term1.getOboId(),
-                            term1.getOntologyName(),
-                            term1.getScore(),
-                            term1.getOntologyIri(),
-                            term1.getIsDefiningOntology(),
-                            term1.getOboDefinitionCitation(),
-                            term1.getAnnotation(),
-                            true, term1.getTermReplacedBy());
-                } else {
-                    term = new Term(term1.getIri(), term1.getName(), term1.getDescription(),
-                            term1.getShortName(),
-                            term1.getOboId(),
-                            term1.getOntologyName(),
-                            term1.getScore(),
-                            term1.getOntologyIri(),
-                            term1.getIsDefiningOntology(),
-                            term1.getOboDefinitionCitation(),
-                            term1.getAnnotation());
-                }
-            }
+
+        Term term = terms.stream().map(SearchResult::toTerm).findFirst().orElse(null);
 
         if (ontology != null && !ontology.isEmpty() && term != null && term.getOntologyName() != null) {
             if (!term.getOntologyName().equalsIgnoreCase(ontology)) {
@@ -760,26 +736,12 @@ public class OLSClient implements Client {
         if (currentTermQuery != null && currentTermQuery.getResponse() != null && currentTermQuery.getResponse().getSearchResults() != null) {
             terms.addAll(Arrays.asList(currentTermQuery.getResponse().getSearchResults()));
         }
-        ObsoleteTerm term = null;
-        for (SearchResult term1 : terms) {
-            if (term1.getName() != null) {
-                if (term1.isObsolete()) {
-                    if (term1.getIsDefiningOntology()) {
-                        return new ObsoleteTerm(term1.getIri(), term1.getName(), term1.getDescription(),
-                                term1.getShortName(),
-                                term1.getOboId(),
-                                term1.getOntologyName(),
-                                term1.getScore(),
-                                term1.getOntologyIri(),
-                                term1.getIsDefiningOntology(),
-                                term1.getOboDefinitionCitation(),
-                                term1.getAnnotation(),
-                                true, term1.getTermReplacedBy());
-                    }
-                }
-            }
-        }
-        return null;
+
+        return (ObsoleteTerm) terms.stream()
+                .filter(SearchResult::isObsolete)
+                .filter(SearchResult::getIsDefiningOntology)
+                .map(SearchResult::toTerm)
+                .findFirst().orElse(null);
     }
 
     /**
@@ -882,7 +844,7 @@ public class OLSClient implements Client {
 
         log.debug(query);
         URI uri = encodeURL("/api/search", query);
-        return this.restTemplate.getForObject(uri, SearchQuery.class);
+        return getForObject(uri, SearchQuery.class);
     }
 
 
@@ -906,7 +868,7 @@ public class OLSClient implements Client {
 
         log.debug(query);
         URI uri = encodeURL("/api/ontologies/" + ontology + "/terms", query);
-        return this.restTemplate.getForObject(uri, RetrieveTermQuery.class);
+        return getForObject(uri, RetrieveTermQuery.class);
     }
 
     private RetrieveTermQuery getRetrieveQuery(String id) throws RestClientException {
@@ -917,7 +879,7 @@ public class OLSClient implements Client {
 
         log.debug(query);
         URI uri = encodeURL("/api/terms", query);
-        return this.restTemplate.getForObject(uri, RetrieveTermQuery.class);
+        return getForObject(uri, RetrieveTermQuery.class);
     }
 
     private String resolveIri(String id) throws RestClientException {
@@ -957,8 +919,7 @@ public class OLSClient implements Client {
     private List<Term> getTermChildren(Href hrefChildren, int distance) {
         if (distance == 0)
             return new ArrayList<>();
-        List<Term> childTerms = new ArrayList<>();
-        childTerms.addAll(getTermQuery(hrefChildren));
+        List<Term> childTerms = new ArrayList<>(getTermQuery(hrefChildren));
         distance--;
         List<Term> currentChild = new ArrayList<>();
         for (Term child : childTerms)
@@ -984,19 +945,15 @@ public class OLSClient implements Client {
         if (href == null)
             return new ArrayList<>();
         List<Term> terms = new ArrayList<>();
-        try {
-            String query = href.getHref();
-            String url = URLDecoder.decode(query, "UTF-8");
-            TermQuery termQuery = this.restTemplate.getForObject(url, TermQuery.class);
-            if (termQuery != null && termQuery.getTerms() != null) {
-                terms.addAll(Arrays.asList(termQuery.getTerms()));
-            }
-            if (termQuery != null && termQuery.getLink() != null && termQuery.getLink().next() != null)
-                terms.addAll(getTermQuery(termQuery.getLink().next()));
-
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+        String query = href.getHref();
+        TermQuery termQuery = getForObject(query, TermQuery.class);
+        if (termQuery != null && termQuery.getTerms() != null) {
+            terms.addAll(Arrays.asList(termQuery.getTerms()));
         }
+        if (termQuery != null && termQuery.getLink() != null && termQuery.getLink().next() != null)
+            terms.addAll(getTermQuery(termQuery.getLink().next()));
+
+
         return terms;
     }
 
@@ -1040,7 +997,7 @@ public class OLSClient implements Client {
 
     public Ontology getOntology(String ontologyId) throws RestClientException {
         URI uri = encodeURL("/api/ontologies/" + ontologyId, null);
-        Ontology ontology = this.restTemplate.getForObject(uri, Ontology.class);
+        Ontology ontology = getForObject(uri, Ontology.class);
         if (ontology != null) {
             return ontology;
         }
@@ -1132,6 +1089,22 @@ public class OLSClient implements Client {
             return uri;
         } catch (URISyntaxException e) {
             throw new RestClientException("The query could not be encoded");
+        }
+    }
+
+    private <T> T getForObject(String url, Class<T> clazz) throws RestClientException {
+        try {
+            return getForObject(new URI(url), clazz);
+        } catch (URISyntaxException e) {
+            throw new RestClientException(e.getMessage());
+        }
+    }
+
+    private <T> T getForObject(URI uri, Class<T> clazz) throws RestClientException {
+        try {
+            return this.mapper.readValue(uri.toURL(), clazz);
+        } catch (IOException e) {
+            throw new RestClientException(e.getMessage());
         }
     }
 }

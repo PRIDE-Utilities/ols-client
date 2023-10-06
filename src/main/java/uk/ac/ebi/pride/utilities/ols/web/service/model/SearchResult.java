@@ -3,6 +3,8 @@ package uk.ac.ebi.pride.utilities.ols.web.service.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
+
 /**
  * SearchResult contains summary term information after the query to the ols service.
  *
@@ -18,13 +20,13 @@ public class SearchResult implements ITerm {
     private Identifier iri;
 
     @JsonProperty("short_form")
-    private Identifier shortName;
+    private Identifier[] shortName;
 
     @JsonProperty("obo_id")
-    private Identifier oboId;
+    private Identifier[] oboId;
 
     @JsonProperty("label")
-    private String name;
+    private String[] name;
 
     @JsonProperty("description")
     private String[] description;
@@ -53,6 +55,41 @@ public class SearchResult implements ITerm {
     @JsonProperty("obo_definition_citation")
     private OboDefinitionCitation[] oboDefinitionCitation;
 
+    public Term toTerm() {
+        if (this.name == null) return null;
+        if (!this.obsolete) {
+            return new Term(
+                    this.getIri(),
+                    this.getName(),
+                    this.getDescription(),
+                    this.getShortName(),
+                    this.getOboId(),
+                    this.getOntologyName(),
+                    this.getScore(),
+                    this.getOntologyIri(),
+                    this.getIsDefiningOntology(),
+                    this.getOboDefinitionCitation(),
+                    this.getAnnotation());
+        } else {
+            return new ObsoleteTerm(
+                    this.getIri(),
+                    this.getName(),
+                    this.getDescription(),
+                    this.getShortName(),
+                    this.getOboId(),
+                    this.getOntologyName(),
+                    this.getScore(),
+                    this.getOntologyIri(),
+                    this.getIsDefiningOntology(),
+                    this.getOboDefinitionCitation(),
+                    this.getAnnotation(),
+                    this.isObsolete(),
+                    this.getTermReplacedBy()
+            );
+        }
+    }
+
+
     public String getId() {
         return id;
     }
@@ -70,26 +107,26 @@ public class SearchResult implements ITerm {
     }
 
     public Identifier getShortName() {
-        return shortName;
+        return first(shortName);
     }
 
-    public void setShortName(String shortName) {
-        this.shortName = new Identifier(shortName, Identifier.IdentifierType.OWL);
+    public void setShortName(List<String> shortName) {
+        this.shortName = shortName.stream().map(s -> new Identifier(s, Identifier.IdentifierType.OWL)).toArray(Identifier[]::new);
     }
 
     public Identifier getOboId() {
-        return oboId;
+        return first(oboId);
     }
 
-    public void setOboId(String oboId) {
-        this.oboId = new Identifier(oboId, Identifier.IdentifierType.OBO);
+    public void setOboId(List<String> oboId) {
+        this.oboId = oboId.stream().map(s -> new Identifier(s, Identifier.IdentifierType.OBO)).toArray(Identifier[]::new);
     }
 
     public String getName() {
-        return name;
+        return first(name);
     }
 
-    public void setName(String name) {
+    public void setName(String[] name) {
         this.name = name;
     }
 
@@ -165,7 +202,12 @@ public class SearchResult implements ITerm {
         this.oboDefinitionCitation = oboDefinitionCitation;
     }
 
-    public Identifier getGlobalId(){
-        return (oboId != null)?oboId:shortName;
+    public Identifier getGlobalId() {
+        return getOboId() != null ? getOboId() : getShortName();
     }
+
+    private static <T> T first(T[] array) {
+        return array != null && array.length >= 1 ? array[0] : null;
+    }
+
 }
