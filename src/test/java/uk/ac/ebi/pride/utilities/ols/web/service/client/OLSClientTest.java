@@ -91,7 +91,7 @@ public class OLSClientTest {
     public void testGetTermParentsByOBOIdGo() throws Exception {
         List<Term> children = olsClient.getTermChildren(new Identifier("GO:0140110", Identifier.IdentifierType.OBO), "GO", 1);
         logger.debug(children.toString());
-        Assert.assertTrue(contains(children, new Identifier("GO:0034246", Identifier.IdentifierType.OBO)));
+        Assert.assertTrue(contains(children, new Identifier("GO:0043856", Identifier.IdentifierType.OBO)));
     }
 
     @Test
@@ -132,7 +132,7 @@ public class OLSClientTest {
     public void testGetTermParentsByOBOId() throws Exception {
         List<Term> parents = olsClient.getTermParents(new Identifier("GO:0034246", Identifier.IdentifierType.OBO), "GO", 1);
         logger.debug(parents.toString());
-        Assert.assertTrue(contains(parents, new Identifier("GO:0140110", Identifier.IdentifierType.OBO)));
+        Assert.assertTrue(contains(parents, new Identifier("GO:0003700", Identifier.IdentifierType.OBO)));
     }
 
     @Test
@@ -150,14 +150,14 @@ public class OLSClientTest {
     public void testGetTermParentsByShortForm() throws Exception {
         List<Term> parents = olsClient.getTermParents(new Identifier("GO_0034246", Identifier.IdentifierType.OWL), "GO", 1);
         logger.debug(parents.toString());
-        Assert.assertTrue(contains(parents, new Identifier("GO_0140110", Identifier.IdentifierType.OWL)));
+        Assert.assertTrue(contains(parents, new Identifier("GO_0006390", Identifier.IdentifierType.OWL)));
     }
 
     @Test
     public void testGetTermParentsByIrIId() throws Exception {
         List<Term> parents = olsClient.getTermParents(new Identifier("http://purl.obolibrary.org/obo/GO_0034246", Identifier.IdentifierType.IRI), "GO", 1);
         logger.debug(parents.toString());
-        Assert.assertTrue(contains(parents, new Identifier("http://purl.obolibrary.org/obo/GO_0140110", Identifier.IdentifierType.IRI)));
+        Assert.assertTrue(contains(parents, new Identifier("http://purl.obolibrary.org/obo/GO_0003700", Identifier.IdentifierType.IRI)));
     }
 
     @Test
@@ -244,7 +244,7 @@ public class OLSClientTest {
 //        Assert.assertEquals(ontology.getNamespace(),"eol");
 //        ontology = olsClient.getOntologyFromFilePath(URI.create("http://www.bio.ntnu.no/ontology/GeXO/gexo.owl"));
 //        Assert.assertEquals(ontology.getNamespace(),"gexo");
-        ontology = olsClient.getOntologyFromFilePath(URI.create("http://purl.obolibrary.org/obo/go.owl"));
+        ontology = olsClient.getOntologyFromFilePath(URI.create("http://purl.obolibrary.org/obo/go/extensions/go-plus.owl"));
         Assert.assertEquals(ontology.getNamespace(),"go");
     }
 
