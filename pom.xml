@@ -9,12 +9,6 @@
     <url>http://github.com/PRIDE-Utilities/ols-client</url>
     <description>Open-source java library to handle requests to the OLS RESTful web service.</description>
 
-    <parent>
-        <groupId>uk.ac.ebi.pride.architectural</groupId>
-        <artifactId>pride-core</artifactId>
-        <version>1.0.3-SNAPSHOT</version>
-    </parent>
-
     <developers>
         <developer>
             <id>Yasset Perez-Riverol</id>
@@ -141,6 +135,17 @@
                 <configuration>
                     <skip>true</skip>
                     <skipDeploy>true</skipDeploy>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <showDeprecation>true</showDeprecation>
+                    <compilerArgument>-Xlint:unchecked</compilerArgument>
                 </configuration>
             </plugin>
         </plugins>
